@@ -19,7 +19,7 @@ require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../classes/Teacher.php';
 
 $teacher = new Teacher();
-$conn = $teacher->getConnection();
+$conn = $teacher->connection();
 
 
 $teacher_id = (int)($_POST['teacher_id'] ?? 0);
@@ -28,9 +28,10 @@ $day        = mysqli_real_escape_string($conn, $_POST['day'] ?? '');
 $time_start = mysqli_real_escape_string($conn, $_POST['time_start'] ?? '');
 $time_end   = mysqli_real_escape_string($conn, $_POST['time_end'] ?? '');
 $room       = mysqli_real_escape_string($conn, $_POST['room'] ?? '');
+$program_id = mysqli_real_escape_string($conn, $_POST['program_id'] ?? '');
 
 // Validate
-if (!$teacher_id || !$subject_id || !$day || !$time_start || !$time_end || !$room) {
+if (!$teacher_id || !$subject_id || !$day || !$time_start || !$time_end || !$room || !$program_id) {
     echo json_encode(['status' => 'error', 'message' => 'All fields are required.']);
     exit;
 }
@@ -43,8 +44,8 @@ if ($teacher->isRoomOccupied($day, $time_start, $time_end, $room)) {
 
 // Insert schedule
 $sql = "
-    INSERT INTO schedule (teacher_id, subject_id, day, time_start, time_end, room)
-    VALUES ($teacher_id, $subject_id, '$day', '$time_start', '$time_end', '$room')
+    INSERT INTO schedule (teacher_id, subject_id, program_id, day, time_start, time_end, room)
+    VALUES ($teacher_id, $subject_id, '$program_id', '$day', '$time_start', '$time_end', '$room')
 ";
 
 if (mysqli_query($conn, $sql)) {

@@ -10,14 +10,26 @@ if (!$teacher_id) {
 }
 
 $teacher = new Teacher();
-$schedules = $teacher->getSchedule($teacher_id); // use your correct method
+$schedules = $teacher->getSchedule($teacher_id); 
 
-// Format to ensure keys are consistent
 $result = [];
 foreach ($schedules as $sch) {
     $result[] = [
-        'sub_name'   => $sch['subject_name'] ?? '',
-        'sub_code'   => $sch['code'] ?? '',
+        // Subject fields
+        'sub_id'     => $sch['sub_id'] ?? '',
+        'sub_code'   => $sch['sub_code'] ?? '',
+        'sub_name'   => $sch['sub_name'] ?? '',
+        'withLab'    => $sch['withLab'] ?? '',
+        'units'      => $sch['units'] ?? '',
+
+        // Program fields
+        'program_id' => $sch['program_id'] ?? '',
+        'p_code'     => $sch['p_code'] ?? '',
+        'p_des'      => $sch['p_des'] ?? '',
+        'p_major'    => $sch['p_major'] ?? '',
+        'p_year'     => $sch['p_year'] ?? '',
+
+        // Schedule info
         'day'        => $sch['day'] ?? '',
         'time_start' => $sch['time_start'] ?? '',
         'time_end'   => $sch['time_end'] ?? '',

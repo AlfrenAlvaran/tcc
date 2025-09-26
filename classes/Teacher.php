@@ -10,6 +10,10 @@ class Teacher extends Database
         parent::__construct();
     }
 
+    public function connection()
+    {
+        return $this->conn;
+    }
     public function getAllTeachers(): array
     {
         $sql = "SELECT id, fname, lname 
@@ -23,36 +27,35 @@ class Teacher extends Database
         $teacher_id = intval($teacher_id);
 
         $sql = "
-            SELECT 
-                s.id, 
-                s.day, 
-                s.time_start, 
-                s.time_end, 
-                s.room, 
-                sub.sub_name AS subject_name, 
-                sub.sub_code AS code
-            FROM schedule s
-            JOIN subjects sub ON s.subject_id = sub.sub_id
-            WHERE s.teacher_id = {$teacher_id}
-            ORDER BY FIELD(s.day,
-                'Monday','Tuesday','Wednesday',
-                'Thursday','Friday','Saturday'
-            ), s.time_start
-        ";
+        SELECT 
+            s.id, 
+            s.day, 
+            s.time_start, 
+            s.time_end, 
+            s.room, 
+            sub.sub_id,
+            sub.sub_code,
+            sub.sub_name,
+            sub.withLab,
+            sub.units,
+            p.program_id,
+            p.p_code,
+            p.p_des,
+            p.p_major,
+            p.p_year
+        FROM schedule s
+        JOIN subjects sub ON s.subject_id = sub.sub_id
+        JOIN programs p ON s.program_id = p.program_id
+        WHERE s.teacher_id = {$teacher_id}
+        ORDER BY FIELD(s.day,
+            'Monday','Tuesday','Wednesday',
+            'Thursday','Friday','Saturday'
+        ), s.time_start
+    ";
 
         return $this->view($sql) ?: [];
     }
 
-    public function getSchedules($teacher_id)
-    {
-        $sql = "SELECT s.*, sub.sub_name, sub.sub_code 
-            FROM schedules s
-            JOIN subjects sub ON s.subject_id = sub.sub_id
-            WHERE s.teacher_id = '$teacher_id'
-            ORDER BY FIELD(day, 'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'), time_start";
-        $results = $this->view($sql);
-        return $results ?: [];
-    }
 
 
     public function getAvailableSubjects(int $teacher_id): array
@@ -186,5 +189,52 @@ class Teacher extends Database
         ";
 
         return $this->save($sqlInsert);
+    }
+
+
+
+    public function getPrograms()
+    {
+        $sql = "SELECT * FROM programs ORDER BY p_code";
+        return $this->view($sql) ?: [];
+    }
+
+    public function getAllSchedules(int $teacher_id): array
+    {
+        $teacher_id = intval($teacher_id);
+
+        $sql = "
+        SELECT 
+            sc.id AS schedule_id,
+            subj.sub_code,
+            subj.sub_name,
+            subj.units,
+            p.p_code,
+            p.p_year,
+            sc.day,
+            sc.time_start,
+            sc.time_end,
+            sc.room,
+            CONCAT(a.fname, ' ', a.lname) AS teacher_name,
+            GROUP_CONCAT(CONCAT(s.Student_FName, ' ', s.Student_LName) SEPARATOR ', ') AS students
+        FROM schedule sc
+        JOIN subjects subj ON sc.subject_id = subj.sub_id
+        JOIN programs p ON sc.program_id = p.program_id
+        JOIN accounts a ON sc.teacher_id = a.id
+        LEFT JOIN enrolled_students es ON es.schedule_id = sc.id
+        LEFT JOIN students s ON es.student_id = s.Student_id
+        WHERE sc.teacher_id = {$teacher_id}
+        GROUP BY sc.id, subj.sub_code, subj.sub_name, subj.units, 
+                 p.p_code, p.p_year, sc.day, sc.time_start, sc.time_end, sc.room, teacher_name
+        ORDER BY sc.day, sc.time_start, subj.sub_code
+    ";
+
+        return $this->view_assoc($sql) ?: [];
+    }
+
+
+    public function showTable()
+    {
+        return $this->view("SHOW TABLES");
     }
 }

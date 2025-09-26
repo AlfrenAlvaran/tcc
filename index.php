@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<?php
+session_start();
+?>
 <html lang="en">
 
 <head>
@@ -26,7 +29,6 @@
 
 	<div class="container ">
 		<?php
-		session_start();
 		if (!isset($_POST['submit'])) {
 			$_SESSION['att'] = 0;
 		}
@@ -35,10 +37,11 @@
 			$pass = $_POST['pass'];
 			$conn = mysqli_connect("localhost", "root", "", "tcc2024");
 			$query = "SELECT * FROM accounts WHERE email='$email' AND password='$pass'";
-			$result = mysqli_query($conn, $query) or die("Error in query!" . mysqli_error());
+			$result = mysqli_query($conn, $query) or die("Error in query!" . mysqli_error($conn));
 			if (mysqli_num_rows($result) > 0) {
 				$row = mysqli_fetch_array($result);
 				$_SESSION['email'] = $row['email'];
+				$_SESSION['id'] = $row['id'];
 				if ($row['status'] == 1) {
 					echo "<center><b align='center' style='font-size:285%; -webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(1px 2px 4px #222);'>Account not verified!</b>";
 				} else {
@@ -46,8 +49,8 @@
 						case '1':
 							header("refresh:0;url=admin/index.php");
 							break;
-						case '2':
-							header("refresh:0;url=#");
+						case '7':
+							header("refresh:0;url=teachers/index.php");
 							break;
 						case '3':
 							header("refresh:0;url=student/index.php");

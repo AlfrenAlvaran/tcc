@@ -17,20 +17,23 @@ class Database
 	}
 
 
-	function add($sql, $link)
+	function add($sql, $link = "")
 	{
 		$results = mysqli_query($this->conn, $sql);
-		if (!$results && empty($link) == false) {
-			die("Error in SQL!");
-		} else if (empty($link)) {
-			echo "";
-		} else {
-?>
-			<script>
-				alert("Successfully added...");
-			</script>
-		<?php
-			header("refresh:0; url=curriculum-create.php?id=" . $_SESSION['curr_id']);
+
+		if (!$results) {
+			die("SQL Error: " . mysqli_error($this->conn));
+		}
+
+		if (!empty($link)) {
+			echo "<script>alert('Successfully added...');</script>";
+
+			if (isset($_SESSION['curr_id'])) {
+				header("refresh:0; url=curriculum-create.php?id=" . intval($_SESSION['curr_id']));
+			} else {
+				header("refresh:0; url=$link");
+			}
+			exit;
 		}
 	}
 	function save($sql)
@@ -58,9 +61,14 @@ class Database
 	function getdata($sql)
 	{
 		$results = mysqli_query($this->conn, $sql);
-		$row = mysqli_fetch_array($results);
-		return $row;
+
+		if (!$results) {
+			die("SQL Error: " . mysqli_error($this->conn) . " in query: " . $sql);
+		}
+
+		return mysqli_fetch_array($results, MYSQLI_ASSOC);
 	}
+
 
 
 	function login($sql)
@@ -88,7 +96,7 @@ class Database
 		if (!$results) {
 			die("Error in SQL!");
 		} else {
-		?>
+?>
 			<script>
 				alert("Deleted data...");
 			</script>
@@ -156,6 +164,19 @@ class Database
 	public function escape(string $value): string
 	{
 		return mysqli_real_escape_string($this->conn, $value);
+	}
+
+	public function view_assoc(string $sql)
+	{
+		$results = mysqli_query($this->conn, $sql);
+		if (!$results) return die("SQL Error: " . mysqli_error($this->conn) . " in query: " . $sql);
+		$data = [];
+		if (mysqli_num_rows($results) > 0) {
+			while ($row = mysqli_fetch_assoc($results)) {
+				$data[] = $row;
+			}
+		}
+		return !empty($data) ? $data : false;
 	}
 }
 

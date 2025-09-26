@@ -42,9 +42,9 @@ require "../classes/Teacher.php"
                                 <table class="table table-sm table-striped" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th class="text-nowrap" style="width: 80px;">#</th>
+                                            <th class="text-nowrap" style="width: 20px;">#</th>
                                             <th>Name</th>
-                                            <th class="text-nowrap" style="width: 100px;">Action</th>
+                                            <th class="text-nowrap" >Action</th>
                                         </tr>
                                     </thead>
 
@@ -59,8 +59,7 @@ require "../classes/Teacher.php"
                                             <td><?= $t['id'] ?></td>
                                            <td><?= ucwords($t['fname'] . ' ' . $t['lname']) ?></td>
                                             <td>
-                                               <a href="./assigned_subjects.php?id=<?= $t['id'] ?>" class="btn btn-sm btn-primary">Assign</a>
-                                                
+                                               <a href="./assigned_subjects.php?id=<?= $t['id'] ?>" class="btn btn-sm btn-primary">view</a>
                                             </td>
                                         </tr>
 

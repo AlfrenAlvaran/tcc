@@ -45,6 +45,7 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
                                     <thead>
                                         <tr>
                                             <th>Subject</th>
+                                            <th>Program</th>
                                             <th>Day</th>
                                             <th>Time Start</th>
                                             <th>Time End</th>
@@ -60,9 +61,16 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
                                                     <option value="">-- Select Subject --</option>
                                                     <?php foreach ($subjects as $sub): ?>
                                                         <option value="<?= $sub['sub_id'] ?>">
-                                                            <?= htmlspecialchars($sub['sub_name']) ?> (<?= $sub['sub_code'] ?>)
+                                                            <?= $sub['sub_code'] ?>
                                                         </option>
                                                     <?php endforeach; ?>
+                                                </select>
+                                            </td>
+
+                                            <!-- Program dropdown -->
+                                            <td>
+                                                <select id="program" class="form-control">
+                                                    <option value="">-- Select Program --</option>
                                                 </select>
                                             </td>
 
@@ -81,16 +89,19 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
 
                                             <!-- Time start -->
                                             <td>
-                                                <select id="timeStart" class="form-control"></select>
+                                                <select id="timeStart" class="form-control">
+                                                    <option value="">-- Select Start --</option>
+                                                </select>
                                             </td>
 
                                             <!-- Time end -->
                                             <td>
-                                                <select id="timeEnd" class="form-control"></select>
+                                                <select id="timeEnd" class="form-control">
+                                                    <option value="">-- Select End --</option>
+                                                </select>
                                             </td>
 
                                             <!-- Room -->
-                                            <td>
                                             <td>
                                                 <select id="room" class="form-control">
                                                     <option value="">-- Select Room --</option>
@@ -125,6 +136,7 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
                                     <thead>
                                         <tr>
                                             <th>Subject</th>
+                                            <th>Programs</th>
                                             <th>Day</th>
                                             <th>Time Start</th>
                                             <th>Time End</th>
@@ -178,6 +190,7 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const subjectSelect = document.getElementById("subjectSelect");
+            const programSelect = document.getElementById("program");
             const daySelect = document.getElementById("daySelect");
             const timeStart = document.getElementById("timeStart");
             const timeEnd = document.getElementById("timeEnd");
@@ -187,22 +200,7 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
 
             const teacherId = <?= json_encode((int) $id) ?>;
 
-
-            const allSlots = [
-                ["07:00:00", "08:00:00"],
-                ["08:00:00", "09:00:00"],
-                ["09:00:00", "10:00:00"],
-                ["10:00:00", "11:00:00"],
-                ["11:00:00", "12:00:00"],
-                ["12:00:00", "13:00:00"],
-                ["13:00:00", "14:00:00"],
-                ["14:00:00", "15:00:00"],
-                ["15:00:00", "16:00:00"],
-                ["16:00:00", "17:00:00"],
-                ["17:00:00", "18:00:00"],
-                ["18:00:00", "19:00:00"]
-            ];
-
+            // Load available time slots when day changes
             daySelect.addEventListener("change", function() {
                 timeStart.innerHTML = "<option value=''>-- Select Start --</option>";
                 timeEnd.innerHTML = "<option value=''>-- Select End --</option>";
@@ -217,9 +215,6 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
                             return;
                         }
 
-                        timeStart.innerHTML = "<option value=''>-- Select Start --</option>";
-                        timeEnd.innerHTML = "<option value=''>-- Select End --</option>";
-
                         data.slots.forEach(slot => {
                             const optStart = document.createElement("option");
                             optStart.value = slot.start;
@@ -232,9 +227,38 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
                             timeEnd.appendChild(optEnd);
                         });
                     });
-
             });
 
+            // Load programs when subject changes
+            subjectSelect.addEventListener("change", function() {
+                programSelect.innerHTML = "<option value=''>-- Select Program --</option>";
+
+                if (!subjectSelect.value) return;
+
+                fetch(`ajax/get_programs.php`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status !== "success") {
+                            alert(data.message || "No programs found");
+                            return;
+                        }
+
+                        data.programs.forEach(p => {
+                            const opt = document.createElement("option");
+                            opt.value = p.program_id;
+                            opt.textContent = `${p.p_code} - ${p.p_year}`;
+                            programSelect.appendChild(opt);
+                        });
+
+                        console.log('Programs loaded:', data.programs);
+                    })
+                    .catch(err => {
+                        console.error("Fetch error:", err);
+                        alert("An error occurred while loading programs.");
+                    });
+            });
+
+            // Format time
             function formatTime(time) {
                 const [hour, minute] = time.split(":");
                 let h = parseInt(hour, 10);
@@ -243,7 +267,6 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
                 return `${h}:${minute}${suffix}`;
             }
 
-
             function loadSchedules() {
                 fetch(`ajax/get_schedule.php?id=${teacherId}`)
                     .then(res => res.json())
@@ -251,15 +274,17 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
                         scheduleList.innerHTML = "";
                         data.forEach(sch => {
                             const row = `
-                    <tr>
-                        <td>${sch.sub_name} (${sch.sub_code})</td>
-                        <td>${sch.day}</td>
-                        <td>${formatTime(sch.time_start)}</td>
-                        <td>${formatTime(sch.time_end)}</td>
-                        <td>${sch.room}</td>
-                    </tr>`;
+                        <tr>
+                            <td style="width: 10px;">${sch.sub_code}</td>
+                            <td>${sch.p_code} - ${sch.p_year}</td>
+                            <td>${sch.day}</td>
+                            <td style="width: 10px;">${formatTime(sch.time_start)}</td>
+                            <td style="width: 10px;">${formatTime(sch.time_end)}</td>
+                            <td>${sch.room}</td>
+                        </tr>`;
                             scheduleList.insertAdjacentHTML("beforeend", row);
                         });
+
                     })
                     .catch(err => {
                         console.error("Fetch error:", err);
@@ -267,28 +292,21 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
                     });
             }
 
-            loadSchedules()
+            loadSchedules();
 
-
+            // Add new schedule
             addBtn.addEventListener("click", function(e) {
                 e.preventDefault();
 
-
-                if (!subjectSelect.value || !daySelect.value || !timeStart.value || !timeEnd.value || !room.value) {
+                if (!subjectSelect.value || !programSelect.value || !daySelect.value || !timeStart.value || !timeEnd.value || !room.value) {
                     alert("Please complete all fields.");
                     return;
                 }
 
-
-                const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text;
-                const dayText = daySelect.value;
-                const startText = timeStart.value;
-                const endText = timeEnd.value;
-                const roomText = room.value;
-
                 const formData = new FormData();
                 formData.append("teacher_id", teacherId);
                 formData.append("subject_id", subjectSelect.value);
+                formData.append("program_id", programSelect.value);
                 formData.append("day", daySelect.value);
                 formData.append("time_start", timeStart.value);
                 formData.append("time_end", timeEnd.value);
@@ -301,12 +319,12 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
                     .then(res => res.json())
                     .then(data => {
                         if (data.status === "success") {
-
                             loadSchedules();
                             subjectSelect.value = "";
+                            programSelect.innerHTML = "<option value=''>-- Select Program --</option>";
                             daySelect.value = "";
-                            timeStart.innerHTML = "";
-                            timeEnd.innerHTML = "";
+                            timeStart.innerHTML = "<option value=''>-- Select Start --</option>";
+                            timeEnd.innerHTML = "<option value=''>-- Select End --</option>";
                             room.value = "";
                         } else {
                             alert(data.message);
@@ -319,4 +337,5 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
             });
         });
     </script>
+
 </body>
