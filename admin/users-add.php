@@ -62,6 +62,7 @@
 											<h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
 										</div>
 										<form action="function.php?status=1" method="POST" class="user" >
+											<!-- <input type="hidden" name="curr_id" value="<?php echo $_SESSION['curr_id']; ?>"> -->
 											<div class="form-group row">
 												<div class="col-sm-6 mb-3 mb-sm-0">
 													<input type="text" name="fname" class="form-control" id="exampleFirstName"

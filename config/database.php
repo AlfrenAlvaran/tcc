@@ -81,14 +81,13 @@ class Database
 			return false;
 		}
 	}
-	function update($sql, $link)
+	function update(string $sql)
 	{
 		$results = mysqli_query($this->conn, $sql);
 		if (!$results) {
 			die("Error in SQL!");
-		} else {
-			echo 200;
 		}
+		return $results;
 	}
 	function delete($sql, $link)
 	{

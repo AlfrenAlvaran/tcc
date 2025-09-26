@@ -76,54 +76,62 @@ class Teacher extends Database
         return $this->view($sql) ?: [];
     }
 
-    public function getAvailableTimeSlots(int $teacher_id, string $day, ?string $room = null): array
-    {
-        $teacher_id = intval($teacher_id);
-        $day = $this->escape($day);
-        $roomCondition = $room ? " AND room = '" . $this->escape($room) . "'" : "";
+   public function getAvailableTimeSlots(int $teacher_id, string $day, ?string $room = null): array
+{
+    $teacher_id = intval($teacher_id);
+    $day = $this->escape($day);
+    $roomCondition = $room ? " AND room = '" . $this->escape($room) . "'" : "";
 
-        $sql = "
-            SELECT time_start, time_end, room
-            FROM schedule
-            WHERE teacher_id = {$teacher_id}
-              AND day = '{$day}'
-              {$roomCondition}
-        ";
+    $sql = "
+        SELECT time_start, time_end, room
+        FROM schedule
+        WHERE teacher_id = {$teacher_id}
+          AND day = '{$day}'
+          {$roomCondition}
+    ";
 
-        $occupied = $this->view($sql) ?: [];
+    $occupied = $this->view($sql) ?: [];
 
-        $all_slots = [
-            ['07:00:00', '08:00:00'],
-            ['08:00:00', '09:00:00'],
-            ['09:00:00', '10:00:00'],
-            ['10:00:00', '11:00:00'],
-            ['11:00:00', '12:00:00'],
-            ['12:00:00', '13:00:00'],
-            ['13:00:00', '14:00:00'],
-            ['14:00:00', '15:00:00'],
-            ['15:00:00', '16:00:00'],
-            ['16:00:00', '17:00:00'],
-            ['17:00:00', '18:00:00'],
-            ['18:00:00', '19:00:00'],
-        ];
+    $all_slots = [
+        ['07:00:00', '08:00:00'],
+        ['08:00:00', '09:00:00'],
+        ['09:00:00', '10:00:00'],
+        ['10:00:00', '11:00:00'],
+        ['11:00:00', '12:00:00'],
+        ['12:00:00', '13:00:00'],
+        ['13:00:00', '14:00:00'],
+        ['14:00:00', '15:00:00'],
+        ['15:00:00', '16:00:00'],
+        ['16:00:00', '17:00:00'],
+        ['17:00:00', '18:00:00'],
+        ['18:00:00', '19:00:00'],
+    ];
 
-        $available = [];
+    $available = [];
 
-        foreach ($all_slots as $slot) {
-            $conflict = false;
-            foreach ($occupied as $o) {
-                if ($slot[0] < $o['time_end'] && $slot[1] > $o['time_start']) {
-                    $conflict = true;
-                    break;
-                }
-            }
-            if (!$conflict) {
-                $available[] = $slot;
+    foreach ($all_slots as $slot) {
+        $conflict = false;
+        foreach ($occupied as $o) {
+            // Convert to timestamps for safe comparison
+            $slotStart = strtotime($slot[0]);
+            $slotEnd   = strtotime($slot[1]);
+            $occStart  = strtotime($o['time_start']);
+            $occEnd    = strtotime($o['time_end']);
+
+            // If slot overlaps with ANY occupied time → mark conflict
+            if ($slotStart >= $occStart && $slotEnd <= $occEnd) {
+                $conflict = true;
+                break;
             }
         }
-
-        return $available;
+        if (!$conflict) {
+            $available[] = $slot;
+        }
     }
+
+    return $available;
+}
+
 
     public function isRoomOccupied(string $day, string $start_time, string $end_time, string $room): bool
     {
@@ -200,10 +208,10 @@ class Teacher extends Database
     }
 
     public function getAllSchedules(int $teacher_id): array
-    {
-        $teacher_id = intval($teacher_id);
+{
+    $teacher_id = intval($teacher_id);
 
-        $sql = "
+    $sql = "
         SELECT 
             sc.id AS schedule_id,
             subj.sub_code,
@@ -214,7 +222,7 @@ class Teacher extends Database
             sc.day,
             sc.time_start,
             sc.time_end,
-            sc.room,
+            COALESCE(sc.room, 'No Room Assigned') AS room,
             CONCAT(a.fname, ' ', a.lname) AS teacher_name,
             GROUP_CONCAT(CONCAT(s.Student_FName, ' ', s.Student_LName) SEPARATOR ', ') AS students
         FROM schedule sc
@@ -229,8 +237,8 @@ class Teacher extends Database
         ORDER BY sc.day, sc.time_start, subj.sub_code
     ";
 
-        return $this->view_assoc($sql) ?: [];
-    }
+    return $this->view_assoc($sql) ?: [];
+}
 
 
     public function showTable()

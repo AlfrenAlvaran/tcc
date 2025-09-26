@@ -9,9 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../classes/Teacher.php';
 $teacher = new Teacher();
 $tables = $teacher->showTable();
-echo "<pre>";
-print_r($tables);
-echo "</pre>";
+
 ?>
 
 <body id="page-top">
@@ -99,11 +97,20 @@ echo "</pre>";
             const scheduleList = document.querySelector("#dataTable tbody");
             const teacherId = <?php echo json_encode($_SESSION['id']); ?>;
             
+           (()=>{
             fetch(`ajax/get-schedules.php?id=${teacherId}`).then(res=>res.json()).then(data=>{
-                console.log('====================================');
-                console.log(data);
-                console.log('====================================');
+                scheduleList.innerHTML = data.map((sch, index) => `
+                    <tr>
+                        <td class="text-nowrap">${index + 1}</td>
+                        <td>${sch.sub_code} - (${sch.units} units)</td>
+                        <td class="text-nowrap">${sch.p_code} - Year ${sch.p_year}</td>
+                        <td>${sch.day}</td>
+                        <td>${sch.time_start} - ${sch.time_end}</td>
+                        <td>${sch.room}</td>
+                    </tr>
+                `).join('');
             })
+           })();
 
             console.log(`Fetching: ajax/get-schedules.php?id=${teacherId}`);
         })
