@@ -19,11 +19,11 @@
         </a>
     </li>
 
-    <!-- Nav Item - Curriculum -->
+    <!-- Nav Item - Classes -->
     <li class="nav-item">
-        <a class="nav-link" href="curriculum.php">
+        <a class="nav-link" href="classes.php">
             <i class="fas fa-fw fa-book"></i>
-            <span>Curriculum</span>
+            <span>Classes</span>
         </a>
     </li>
 
