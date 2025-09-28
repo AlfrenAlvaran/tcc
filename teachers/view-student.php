@@ -75,9 +75,7 @@ $subjectName = $_GET['subject'] ?? '';
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
 
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -103,29 +101,38 @@ $subjectName = $_GET['subject'] ?? '';
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form method="post">
+                            <form method="post" action="ajax/record-grade.php" id="gradeForm">
+                                <input type="hidden" name="student_id" value="<?= $id ?>">
+
                                 <div class="form-group">
-                                    <label for="subject">Subject </label>
-                                    <input type="text" class="form-control" value="<?= htmlspecialchars($subjectName) ?>" id="subject" name="subject" readonly>
+                                    <label for="subject">Subject</label>
+                                    <input type="text" class="form-control"
+                                        value="<?= htmlspecialchars($subjectName) ?>"
+                                        id="subject" name="subject" readonly>
                                 </div>
+
                                 <div class="form-group">
-                                    <label for="prelim">Quarter</label>
+                                    <label for="quarter">Quarter</label>
                                     <select name="quarter" id="quarter" class="form-control">
                                         <option value="Prelim">Prelim</option>
                                         <option value="Midterms">Midterms</option>
                                         <option value="Finals">Finals</option>
                                     </select>
                                 </div>
+
                                 <div class="form-group">
                                     <label for="grade">Grade</label>
-                                    <input type="number" class="form-control" id="grade" name="grade" min="0" max="100" required>
+                                    <input type="number" class="form-control"
+                                        id="grade" name="grade" min="0" max="100" step="0.01" required>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Save</button>
                                 </div>
                             </form>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -159,42 +166,58 @@ $subjectName = $_GET['subject'] ?? '';
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', load());
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+
+            document.getElementById('gradeForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                fetch('ajax/record-grade.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        alert(res.message);
+                        $('#exampleModalLong').modal('hide');
+                        loadData();
+                    });
+            });
+        });
 
         function loadData() {
             const table = document.querySelector('#dataTable tbody');
+            table.innerHTML = '';
 
-            fetch(`ajax/load-grade.php?id=<?= $id ?>`)
-                .then(response => response.json())
+            fetch(`ajax/load-grade.php?id=<?= $id ?>&subject=<?= urlencode($subjectName) ?>`)
+                .then(res => res.json())
                 .then(data => {
-                    console.log(data);
-                    table.innerHTML = '';
-
                     if (data.length === 0) {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                    <td>1</td>
-                    <td><?= $subjectName ?></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <button class="btn btn-sm btn-warning">Edit</button>
-                        <button class="btn btn-sm btn-danger">Delete</button>
-                    </td>
+                        table.innerHTML = `
+                    <tr>
+                        <td>1</td>
+                        <td><?= $subjectName ?></td>
+                        <td>Not Encoded</td>
+                        <td>Not Encoded</td>
+                        <td>Not Encoded</td>
+                        <td>Not Encoded</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning">Edit</button>
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </td>
+                    </tr>
                 `;
-                        table.appendChild(row);
                     } else {
                         data.forEach((grade, index) => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
                         <td>${index + 1}</td>
-                        <td><?= $subjectName ?></td>
-                        <td>${grade.prelim ?? ''}</td>
-                        <td>${grade.midterms ?? ''}</td>
-                        <td>${grade.finals ?? ''}</td>
-                        <td>${grade.remarks ?? ''}</td>
+                        <td>${grade.subject}</td>
+                        <td>${grade.prelim ? parseFloat(grade.prelim).toFixed(2) : 'Not Encoded'}</td>
+                        <td>${grade.midterm ? parseFloat(grade.midterm).toFixed(2) : 'Not Encoded'}</td>
+                        <td>${grade.finals ? parseFloat(grade.finals).toFixed(2) : 'Not Encoded'}</td>
+                        <td>${grade.remarks}</td>
                         <td>
                             <button class="btn btn-sm btn-warning">Edit</button>
                             <button class="btn btn-sm btn-danger">Delete</button>
@@ -203,13 +226,7 @@ $subjectName = $_GET['subject'] ?? '';
                             table.appendChild(row);
                         });
                     }
-                })
-                .catch(error => console.error('Error fetching grades:', error));
-        }
-
-
-        function load() {
-            loadData();
+                });
         }
     </script>
 </body>
