@@ -5,13 +5,19 @@ require_once "./includes/header.php";
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-$id = (int)($_GET['id'] ?? 0);
+
+$teacher_id = $_SESSION['id'] ?? 0;
+// print_r($teacher_id);
+$id = (int)$_GET['id'] ?? 0;
 require_once __DIR__ . '/../classes/Grades.php';
 $name_of_student = new Grades();
 $student = $name_of_student->getStudent($id);
 // print_r($student);
 $subjectName = $_GET['subject'] ?? '';
 
+$test = $name_of_student->getGrades($id, $subjectName, $teacher_id);
+
+// print_r($test);
 
 ?>
 
@@ -51,12 +57,15 @@ $subjectName = $_GET['subject'] ?? '';
                             }
                             ?>
                             <h6 class="m-0 font-weight-bold text-primary"><?= $formattedName ?></h6>
+
+
                             <div class="d-flex justify-content-end mb-2">
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
                                     Add Grade
                                 </button>
 
                             </div>
+
 
                         </div>
                         <div class="card-body">
@@ -103,12 +112,19 @@ $subjectName = $_GET['subject'] ?? '';
                         <div class="modal-body">
                             <form method="post" action="ajax/record-grade.php" id="gradeForm">
                                 <input type="hidden" name="student_id" value="<?= $id ?>">
-
+                                <input type="hidden" name="teacher_id" value="<?= $teacher_id ?>">
                                 <div class="form-group">
                                     <label for="subject">Subject</label>
                                     <input type="text" class="form-control"
                                         value="<?= htmlspecialchars($subjectName) ?>"
                                         id="subject" name="subject" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <select name="semester" id="semester" class="form-control">
+                                        <option value="1">1st Semester</option>
+                                        <option value="2">2nd Semester</option>
+                                    </select>
                                 </div>
 
                                 <div class="form-group">
@@ -166,10 +182,15 @@ $subjectName = $_GET['subject'] ?? '';
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        $(document).ready(function() {
+
+            const dataTable = $('#dataTable').DataTable();
+
+
             loadData();
 
-            document.getElementById('gradeForm').addEventListener('submit', function(e) {
+
+            $('#gradeForm').on('submit', function(e) {
                 e.preventDefault();
                 const formData = new FormData(this);
 
@@ -184,51 +205,47 @@ $subjectName = $_GET['subject'] ?? '';
                         loadData();
                     });
             });
+
+
+            function loadData() {
+                fetch(`ajax/load-grade.php?id=<?= $id ?>&subject=<?= urlencode($subjectName) ?>`)
+                    .then(res => res.json())
+                    .then(data => {
+                        dataTable.clear();
+
+                        if (!data || data.length === 0) {
+                            dataTable.row.add([
+                                "1",
+                                "<?= $subjectName ?>",
+                                "Not Encoded",
+                                "Not Encoded",
+                                "Not Encoded",
+                                "Not Encoded",
+                                `<button class="btn btn-sm btn-warning">Edit</button>
+                     <button class="btn btn-sm btn-danger">Delete</button>`
+                            ]).draw();
+                        } else {
+                            data.forEach((grade, index) => {
+                                dataTable.row.add([
+                                    index + 1,
+                                    grade.subject,
+                                    grade.prelim !== null ? grade.prelim.toFixed(2) : "Not Encoded",
+                                    grade.midterm !== null ? grade.midterm.toFixed(2) : "Not Encoded",
+                                    grade.finals !== null ? grade.finals.toFixed(2) : "Not Encoded",
+                                    grade.remarks,
+                                    `<button class="btn btn-sm btn-warning">Edit</button>
+                         <button class="btn btn-sm btn-danger">Delete</button>`
+                                ]);
+                            });
+                            dataTable.draw();
+                        }
+                    });
+            }
+
+
         });
-
-        function loadData() {
-            const table = document.querySelector('#dataTable tbody');
-            table.innerHTML = '';
-
-            fetch(`ajax/load-grade.php?id=<?= $id ?>&subject=<?= urlencode($subjectName) ?>`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.length === 0) {
-                        table.innerHTML = `
-                    <tr>
-                        <td>1</td>
-                        <td><?= $subjectName ?></td>
-                        <td>Not Encoded</td>
-                        <td>Not Encoded</td>
-                        <td>Not Encoded</td>
-                        <td>Not Encoded</td>
-                        <td>
-                            <button class="btn btn-sm btn-warning">Edit</button>
-                            <button class="btn btn-sm btn-danger">Delete</button>
-                        </td>
-                    </tr>
-                `;
-                    } else {
-                        data.forEach((grade, index) => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${grade.subject}</td>
-                        <td>${grade.prelim ? parseFloat(grade.prelim).toFixed(2) : 'Not Encoded'}</td>
-                        <td>${grade.midterm ? parseFloat(grade.midterm).toFixed(2) : 'Not Encoded'}</td>
-                        <td>${grade.finals ? parseFloat(grade.finals).toFixed(2) : 'Not Encoded'}</td>
-                        <td>${grade.remarks}</td>
-                        <td>
-                            <button class="btn btn-sm btn-warning">Edit</button>
-                            <button class="btn btn-sm btn-danger">Delete</button>
-                        </td>
-                    `;
-                            table.appendChild(row);
-                        });
-                    }
-                });
-        }
     </script>
+
 </body>
 
 </html>

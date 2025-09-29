@@ -37,6 +37,20 @@ $subjectName = $_GET['subject'] ?? 'Class';
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">Students List</h6>
+
+                            <div class="d-flex justify-content-end mb-2 gap-2">
+                                <button type="button" id="exportStudents" class="btn btn-success">
+                                    Export to Excel
+                                </button>
+
+                                <form id="uploadExcelForm" enctype="multipart/form-data">
+                                    <input type="file" name="excelFile" id="excelFile" accept=".xls,.xlsx" hidden>
+                                    <button type="button" class="btn btn-primary" onclick="document.getElementById('excelFile').click()">
+                                        Upload Grades
+                                    </button>
+                                </form>
+                            </div>
+
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -111,7 +125,25 @@ $subjectName = $_GET['subject'] ?? 'Class';
     <!-- Bootstrap core JavaScript-->
     <?php include("includes/js-link.php"); ?>
 
+    <script>
+        $('#exportStudents').on('click', function() {
+            window.location.href = `ajax/export-students.php?id=<?= $id ?>&subject=<?= urlencode($subjectName) ?>`;
+        });
+        $('#excelFile').on('change', function() {
+            const formData = new FormData($('#uploadExcelForm')[0]);
+            formData.append("subject", "<?= $subjectName ?>");
 
+            fetch('ajax/upload-grade.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(res => {
+                    alert(res.message);
+                    location.reload();
+                });
+        });
+    </script>
 </body>
 
 </html>
