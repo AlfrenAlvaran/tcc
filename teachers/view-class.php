@@ -38,15 +38,18 @@ $subjectName = $_GET['subject'] ?? 'Class';
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">Students List</h6>
 
-                            <div class="d-flex justify-content-end mb-2 gap-2">
-                                <button type="button" id="exportStudents" class="btn btn-success">
-                                    Export to Excel
+                            <div class="d-flex gap-2 justify-content-end mb-2">
+                                <!-- Export Button -->
+                                <button type="button" id="exportStudents" class="btn btn-success btn-sm">
+                                    <i class="fas fa-file-excel"></i> Export to Excel
                                 </button>
 
+                                <!-- Upload Button -->
                                 <form id="uploadExcelForm" enctype="multipart/form-data">
                                     <input type="file" name="excelFile" id="excelFile" accept=".xls,.xlsx" hidden>
-                                    <button type="button" class="btn btn-primary" onclick="document.getElementById('excelFile').click()">
-                                        Upload Grades
+                                    <button type="button" class="btn btn-primary btn-sm"
+                                        onclick="document.getElementById('excelFile').click()">
+                                        <i class="fas fa-upload"></i> Upload Grades
                                     </button>
                                 </form>
                             </div>

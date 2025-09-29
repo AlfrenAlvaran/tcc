@@ -10,14 +10,14 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 $teacherId = $_SESSION['id'] ?? 0;
-
+$subject_name = $_GET['subject'] ?? '';
 $scheduleId = (int)($_GET['id'] ?? 0);
 $subject    = $_GET['subject'] ?? '';
 
 $classes = new Classes();
 $grades  = new Grades();
 
-// Get students for this schedule
+
 $students = $classes->getStudentWithProgramAndStudents($scheduleId);
 
 $spreadsheet = new Spreadsheet();
@@ -73,7 +73,7 @@ foreach ($students as $student) {
 
 
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-header('Content-Disposition: attachment; filename="students_grades.xlsx"');
+header('Content-Disposition: attachment; filename="students_grades_' . $subject_name . '.xlsx"');
 $writer = new Xlsx($spreadsheet);
 $writer->save("php://output");
 exit;
