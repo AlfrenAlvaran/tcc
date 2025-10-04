@@ -362,7 +362,6 @@ GROUP BY s.user_id;
 
     public function getCurriculumByStudent($id)
     {
-        // $stmt = $this->conn->prepare("SELECT * FROM enrolled_curriculum WHERE student_id = ?");
         $stmt = $this->conn->prepare("SELECT ec.*, s.Student_FName, s.Student_MName, s.Student_LName, p.p_code, s.SY FROM enrolled_curriculum ec JOIN students s ON ec.student_id = s.Student_id JOIN programs p ON ec.program_id = p.program_id WHERE ec.student_id = ?");
         $stmt->execute([$id]);
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -378,5 +377,16 @@ GROUP BY s.user_id;
         $stmt = $this->conn->prepare("SELECT * FROM subjects WHERE sub_id = ?");
         $stmt->execute([$id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function removeStudentSubject($studentId, $subjectId)
+    {
+        try {
+            $stmt = $this->conn->prepare("DELETE FROM enrolled_curriculum WHERE student_id = ? AND subject_id = ?");
+            return $stmt->execute([$studentId, $subjectId]);
+        } catch (PDOException $e) {
+            error_log("Remove subject error: " . $e->getMessage());
+            return false;
+        }
     }
 }

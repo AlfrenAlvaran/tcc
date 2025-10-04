@@ -98,7 +98,7 @@
                                 if (!empty($curriculum_data)) {
                                     $grouped = [];
                                     foreach ($curriculum_data as $row) {
-                                        $semKey = "Semester {$row['semester']} - S.Y. {$row['sy']} - Year {$row['yr']}";
+                                        $semKey = "Semester {$row['semester']} - S.Y. {$row['sy']}";
                                         $grouped[$semKey][] = $row;
                                     }
 
@@ -111,6 +111,7 @@
                                                     <th>Subject Name</th>
                                                     <th class='text-center'>Units</th>
                                                     <th class='text-center'>With Lab</th>
+                                                    <th class='text-center'>Actions</th>
                                                 </tr>
                                               </thead>
                                               <tbody>";
@@ -122,6 +123,14 @@
                                                 echo "<td>" . htmlspecialchars($sub['sub_name']) . "</td>";
                                                 echo "<td class='text-center'>" . htmlspecialchars($sub['units']) . "</td>";
                                                 echo "<td class='text-center'>" . ($sub['withLab'] ? "Yes" : "No") . "</td>";
+                                                echo "<td class='text-center'>
+                                                            <button class='btn btn-danger btn-sm remove-subject' 
+                                                                    data-student='{$std_id}' 
+                                                                    data-subject='{$sub['sub_id']}'>
+                                                                <i class='fas fa-trash'></i>
+                                                            </button>
+                                                    </td>";
+
                                                 echo "</tr>";
                                             }
                                         }
@@ -156,6 +165,50 @@
     <?php include("includes/logout-modal.php"); ?>
     <?php include("includes/js-link.php"); ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+   <script>
+$(document).ready(function() {
+    $(".remove-subject").on("click", function(e) {
+        e.preventDefault();
+
+        const btn = $(this); // ✅ this now correctly refers to the clicked button
+        const studentId = btn.data("student");
+        const subjectId = btn.data("subject");
+
+        if (!confirm("Are you sure you want to remove this subject?")) return;
+
+        $.ajax({
+            url: "ajax/remove_subject.php", // adjust path as needed
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                student_id: studentId,
+                subject_id: subjectId
+            }),
+            success: function(response) {
+                // If the response comes as string, parse it
+                if (typeof response === "string") {
+                    try { response = JSON.parse(response); } catch (e) {}
+                }
+
+                if (response.success) {
+                    btn.closest("tr").remove();
+                    alert("✅ " + response.message);
+                } else {
+                    alert("❌ " + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("XHR:", xhr.responseText);
+                console.error("Status:", status);
+                console.error("Error:", error);
+                alert("⚠️ An error occurred while removing the subject.");
+            }
+        });
+    });
+});
+</script>
+
 </body>
 
 </html>

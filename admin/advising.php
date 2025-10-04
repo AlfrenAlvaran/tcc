@@ -8,9 +8,9 @@
     require_once __DIR__ . '/../classes/Enrollment.php';
     $students = new Enrollment();
     $student_list = $students->getStudentsWithEnrollments();
-    echo "<pre>";
-    print_r($student_list);
-    echo "</pre>";
+    // echo "<pre>";
+    // print_r($student_list);
+    // echo "</pre>";
 
     ?>
 
@@ -61,7 +61,7 @@
                                             <th>Name</th>
                                             <th>Program</th>
                                             <th>Semesters</th>
-                                            <th>Curriculum</th>
+                                            <th>Year Level</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>

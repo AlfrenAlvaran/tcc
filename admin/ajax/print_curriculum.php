@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/../../config/PDOConnection.php';
 
-// ✅ Get PDO connection
 $conn = PDOConnection::getInstance()->getConnection();
 
 $student_id = $_GET['student_id'] ?? '';

@@ -27,9 +27,9 @@ ORDER BY s.Student_LName;
 
 
     $results = $database->view($sql);
-    echo "<pre>";
-    print_r($results);
-    echo "</pre>";
+    // echo "<pre>";
+    // print_r($results);
+    // echo "</pre>";
     ?>
 </head>
 
