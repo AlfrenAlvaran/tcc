@@ -5,18 +5,12 @@
     <?php
     session_start();
     include("includes/header.php");
-    // include("../config/database.php");
     require_once __DIR__ . '/../classes/Enrollment.php';
-    // $sql = "SELECT * FROM students ORDER BY Student_id ASC";
-    // $results = $database->view($sql);
-    //print_r($results);
-    //fetch Programs
-
-    // $sql = "SELECT * FROM students ORDER BY Student_LName ASC";
-    // $programs = $database->view($sql);
-
-    $enrollment = new Enrollment();
-    $students = $enrollment->getAllStudentNotEnrolled();
+    $students = new Enrollment();
+    $student_list = $students->getStudentsWithEnrollments();
+    // echo "<pre>";
+    // print_r($student_list);
+    // echo "</pre>";
 
     ?>
 
@@ -49,19 +43,14 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800"></h1>
 
-                        <a href="add-students.php" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-user fa-sm text-white-50"></i> Add student</a>
-                    </div>
 
                     <!-- Content Row -->
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Students List</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Student List</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -70,21 +59,23 @@
                                         <tr>
                                             <th>Student ID</th>
                                             <th>Name</th>
-                                            <th>Program ID</th>
+                                            <th>Program</th>
+                                            <th>Semesters</th>
+                                            <th>Curriculum</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
-                                       
-
-                                        <?php foreach( $students as $student): ?>
+                                        <?php foreach ($student_list as $student): ?>
                                             <tr>
                                                 <td><?php echo $student['SY'] . '-' . $student['Student_id']; ?></td>
                                                 <td><?php echo $student['Student_FName'] . ' ' . $student['Student_LName']; ?></td>
-                                                <td><?php echo $student['prog_id']; ?></td>
+                                                <td><?php echo $student['p_code']; ?></td>
+                                                <td><?php echo $student['sem']; ?>st Semester</td>
+                                                <td><?php echo $student['cur_year']; ?></td>
                                                 <td>
-                                                    <a href="enroll_student.php?id=<?= $student['Student_id']; ?>" class="btn btn-info btn-sm">Enroll Student</a>
+                                                    <a href="view_student.php?id=<?= $student['user_id']; ?>&student=<?= urlencode($student['Student_FName'] . ' ' . $student['Student_LName']); ?>&year=<?= urlencode($student['cur_year']); ?>&sem=<?= urlencode($student['sem']); ?>&progID=<?= urlencode($student['prog_id']); ?>&student_id=<?= urlencode($student['Student_id']); ?>" class="btn btn-info btn-sm">View</a>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

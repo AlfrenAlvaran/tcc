@@ -41,6 +41,7 @@ class Database
 		$results = mysqli_query($this->conn, $sql);
 		return $results;
 	}
+	
 	function view($sql)
 	{
 		$results = mysqli_query($this->conn, $sql);

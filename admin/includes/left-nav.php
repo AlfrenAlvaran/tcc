@@ -27,6 +27,15 @@
         </a>
     </li>
 
+
+    <!-- Nav Item - Curriculum -->
+    <li class="nav-item">
+        <a class="nav-link" href="advising.php">
+            <i class="fas fa-fw fa-book"></i>
+            <span>Advising</span>
+        </a>
+    </li>
+
     <!-- Divider -->
     <hr class="sidebar-divider">
 

@@ -200,7 +200,7 @@ $rooms = ['CL1', 'CL2', 'CL3', '201', '202', '203', '303', '401', '402', 'Lib'];
 
             const teacherId = <?= json_encode((int) $id) ?>;
 
-            // Load available time slots when day changes
+          
             daySelect.addEventListener("change", function() {
                 timeStart.innerHTML = "<option value=''>-- Select Start --</option>";
                 timeEnd.innerHTML = "<option value=''>-- Select End --</option>";

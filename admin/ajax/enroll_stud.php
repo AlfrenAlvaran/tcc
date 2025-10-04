@@ -2,29 +2,41 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once("../../config/database.php");
+require_once __DIR__ . '/../../classes/Enrollment.php';
+$enrollment = new Enrollment();
 
 $status = $_GET['status'] ?? 0;
-
 if ($status == 1) {
-    $stid   = $_POST['stid'];
-    $cname  = $_POST['cname'];
-    $course = $_POST['course']; 
-    $cur    = $_POST['cur'];
+    $stid     = intval($_POST['stid']);
+    $semester = intval($_POST['semester']);
+    $sy       = $_POST['sy'];
+    $cur      = $_POST['cur_id'];
+    $yr_level = intval($_POST['yr_level'] ?? 0);
 
-    
-    $prog_id = $database->getProgramId($course);
-    $cur_id  = $database->getCurriculumId($cur);
+    $existing = $enrollment->GetData("SELECT sem FROM enrollments WHERE student_id = ? AND sy = ? AND yr_level = ?", [$stid, $sy, $yr_level]);
 
-    if ($prog_id && $cur_id) {
-        $sql = "INSERT INTO enrolled_students 
-                (Student_id, Complete_Name, course, curriculum, cur_id, cur_program_id, enrolled_date)
-                VALUES ('$stid', '$cname', '$course', '$cur', '$cur_id', '$prog_id', NOW())";
-
-        $database->enroll($sql, "enrolled_students.php");
-    } else {
-        die("Invalid program or curriculum selected.");
+    if (!is_array($existing)) {
+        $existing = [];
+    } else if ($existing['sem'] == $semester) {
+        $existing = [$existing];
     }
-} else {
-    echo "failed";
+    $semestersEnrolled = array_column($existing, column_key: 'sem');
+    if (in_array(1, $semestersEnrolled) && in_array(2, $semestersEnrolled)) {
+        $_SESSION['error'] = "This student has already completed both semesters for Year Level $yr_level ($sy).";
+        header("Location: ../enroll_student.php?id=" . $stid);
+        exit;
+    }
+
+
+    if (in_array($semester, $semestersEnrolled)) {
+        $_SESSION['error'] = "This student is already enrolled in Semester $semester for Year Level $yr_level ($sy).";
+        header("Location: ../enroll_student.php?id=" . $stid);
+        exit;
+    }
+
+
+    foreach ($cur as $cur_id) {
+        $enrollment->enrollStudent($stid, intval($cur_id), $yr_level, $semester, $sy);
+        header("Location: ../enrolled_students.php");
+    }
 }
