@@ -211,7 +211,7 @@ GROUP BY s.user_id;
           AND cc.cc_sem = ?
     ";
 
-        return $this->GetData($sql, [$studentId, $programId, $curYear, $sem], false); // false = multiple rows
+        return $this->GetData($sql, [$studentId, $programId, $curYear, $sem], false); 
     }
 
 
@@ -266,6 +266,8 @@ GROUP BY s.user_id;
 
     public function enroll_curriculum(string $std_id, int $prog_id, int $cur_year, int $sem, array $subjects): array
     {
+        $std_id = str_pad($std_id, 4, '0', STR_PAD_LEFT);
+
         if (empty($std_id) || $prog_id <= 0 || $cur_year <= 0 || $sem <= 0 || empty($subjects)) {
             return [
                 'success' => false,

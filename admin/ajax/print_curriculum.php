@@ -15,19 +15,10 @@ if (empty($student_id) || $prog_id <= 0 || $cur_year <= 0 || $sem <= 0) {
 
 $stmt = $conn->prepare("
     SELECT 
-        st.student_id,
+        LPAD(st.Student_id, 4, '0') AS student_id,
         CONCAT(st.Student_LName, ', ', st.Student_FName, ' ', st.Student_MName) AS full_name,
-        st.gender,
-        st.birthday,
-        st.age,
         st.SY,
-        st.complete_addres,
-        st.province,
-        st.city,
-        st.barangay,
-        p.p_code,
         p.p_des,
-        p.p_major,
         ec.yr,
         ec.semester,
         ec.sy,
@@ -35,25 +26,27 @@ $stmt = $conn->prepare("
         s.sub_name,
         s.units,
         s.withLab
-    FROM enrolled_curriculum ec
-    JOIN students st ON ec.student_id = st.student_id
+    FROM students st
+    JOIN programs p ON st.prog_id = p.program_id
+    JOIN enrolled_curriculum ec 
+        ON ec.student_id = st.Student_id 
+       AND ec.program_id = p.program_id
     JOIN subjects s ON ec.subject_id = s.sub_id
-    JOIN programs p ON ec.program_id = p.program_id
-    WHERE ec.student_id = ?
-      AND ec.program_id = ?
-      AND ec.yr = ?
-      AND ec.semester = ?
-    ORDER BY s.sub_code ASC
+    WHERE st.Student_id = ?
+    ORDER BY ec.yr DESC, ec.semester DESC
 ");
-$stmt->execute([$student_id, $prog_id, $cur_year, $sem]);
+$stmt->execute([$student_id]);
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (!$rows) {
-    die("No curriculum found for this student.");
+    die("Student not found.");
 }
 
 $student = $rows[0];
-$totalUnits = array_sum(array_column($rows, 'units'));
+
+// 🔹 Compute total units (only if subjects exist)
+$subjects = array_filter($rows, fn($r) => !empty($r['sub_code']));
+$totalUnits = $subjects ? array_sum(array_column($subjects, 'units')) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -66,29 +59,22 @@ $totalUnits = array_sum(array_column($rows, 'units'));
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-
-        h2,
-        h3 {
+        h2, h3 {
             margin-bottom: 5px;
         }
-
         table {
             border-collapse: collapse;
             width: 100%;
             margin-top: 15px;
         }
-
-        th,
-        td {
+        th, td {
             border: 1px solid #333;
             padding: 8px;
             text-align: left;
         }
-
         th {
             background: #eee;
         }
-
         .header {
             margin-bottom: 20px;
         }
@@ -103,11 +89,12 @@ $totalUnits = array_sum(array_column($rows, 'units'));
     <h3>Student Information</h3>
     <p><strong>ID:</strong> <?= htmlspecialchars($student['student_id']) ?></p>
     <p><strong>Name:</strong> <?= htmlspecialchars($student['full_name']) ?></p>
-    <p><strong>School Year:</strong> <?= htmlspecialchars($student['sy']) ?></p>
+    <p><strong>School Year:</strong> <?= htmlspecialchars($student['SY']) ?></p>
 
     <h3>Program Information</h3>
     <p><strong>Program:</strong> <?= htmlspecialchars($student['p_des']) ?></p>
-    <p><strong>Year:</strong> <?= $student['yr'] ?> | <strong>Semester:</strong> <?= $student['semester'] ?></p>
+    <p><strong>Year:</strong> <?= $student['yr'] ?: $cur_year ?> | 
+       <strong>Semester:</strong> <?= $student['semester'] ?: $sem ?></p>
 
     <h3>Enrolled Subjects</h3>
     <table>
@@ -120,20 +107,25 @@ $totalUnits = array_sum(array_column($rows, 'units'));
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($rows as $row): ?>
+            <?php if ($subjects): ?>
+                <?php foreach ($subjects as $row): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($row['sub_code']) ?></td>
+                        <td><?= htmlspecialchars($row['sub_name']) ?></td>
+                        <td><?= htmlspecialchars($row['units']) ?></td>
+                        <td><?= $row['withLab'] ? "Yes" : "No" ?></td>
+                    </tr>
+                <?php endforeach; ?>
                 <tr>
-                    <td><?= htmlspecialchars($row['sub_code']) ?></td>
-                    <td><?= htmlspecialchars($row['sub_name']) ?></td>
-                    <td><?= htmlspecialchars($row['units']) ?></td>
-                    <td><?= $row['withLab'] ? "Yes" : "No" ?></td>
+                    <td colspan="2"><strong>Total Units</strong></td>
+                    <td colspan="2"><strong><?= $totalUnits ?></strong></td>
                 </tr>
-            <?php endforeach; ?>
-            <tr>
-                <td colspan="2"><strong>Total Units</strong></td>
-                <td colspan="2"><strong><?= $totalUnits ?></strong></td>
-            </tr>
+            <?php else: ?>
+                <tr>
+                    <td colspan="4" style="text-align:center;">No subjects enrolled for this year/semester.</td>
+                </tr>
+            <?php endif; ?>
         </tbody>
     </table>
 </body>
-
 </html>

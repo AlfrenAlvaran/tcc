@@ -229,7 +229,7 @@
                     url: "ajax/enroll_curriculum.php",
                     type: "POST",
                     data: {
-                        student_id: <?= (int)$_GET['student_id']; ?>,
+                        student_id: <?= (string)$_GET['student_id']; ?>,
                         prog_id: <?= (int)$_GET['progID']; ?>,
                         cur_year: <?= (int)$_GET['year']; ?>,
                         sem: <?= (int)$_GET['sem']; ?>,
