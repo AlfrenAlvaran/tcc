@@ -389,4 +389,10 @@ GROUP BY s.user_id;
             return false;
         }
     }
+
+    public function getStudentBasicInfo($id) {
+        $stmt =$this->conn->prepare("SELECT s.*, p.*, e.* FROM students s JOIN programs p ON s.prog_id = p.program_id JOIN enrollments e ON s.Student_id = e.student_id WHERE s.Student_id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

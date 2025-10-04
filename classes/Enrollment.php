@@ -55,7 +55,7 @@ class Enrollment
 
     public function getAllStudentNotEnrolled()
     {
-        $stmt = $this->conn->prepare("SELECT * FROM students");
+        $stmt = $this->conn->prepare("SELECT s.*, p.* FROM students s JOIN programs p ON s.prog_id = p.program_id");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

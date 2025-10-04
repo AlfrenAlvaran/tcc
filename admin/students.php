@@ -70,7 +70,7 @@
                                         <tr>
                                             <th>Student ID</th>
                                             <th>Name</th>
-                                            <th>Program ID</th>
+                                            <th>Program </th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -82,7 +82,7 @@
                                             <tr>
                                                 <td><?php echo $student['SY'] . '-' . $student['Student_id']; ?></td>
                                                 <td><?php echo $student['Student_FName'] . ' ' . $student['Student_LName']; ?></td>
-                                                <td><?php echo $student['prog_id']; ?></td>
+                                                <td><?php echo $student['p_code']; ?></td>
                                                 <td>
                                                     <a href="enroll_student.php?id=<?= $student['Student_id']; ?>" class="btn btn-info btn-sm">Enroll Student</a>
                                                 </td>

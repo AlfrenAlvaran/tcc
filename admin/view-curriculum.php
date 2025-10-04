@@ -10,8 +10,12 @@
     $std_id = $_GET['id'];
     $curriculum = new Curriculum();
     $curriculum_data = $curriculum->getCurriculumByStudent($std_id);
-    $student_info = !empty($curriculum_data) ? $curriculum_data[0] : null;
-    ?>
+    // $student_info = !empty($curriculum_data) ? $curriculum_data[0] : null;
+    $student_info = $curriculum->getStudentBasicInfo($std_id);
+    // echo "<pre>";
+    // print_r($student_info);
+    // echo "</pre>";
+    // ?>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Student Schedule</title>
@@ -61,7 +65,7 @@
                                     <tbody>
                                         <tr>
                                             <th style="width: 150px;">Student No.</th>
-                                            <td><?= $student_info['SY'] ?>-<?= htmlspecialchars($student_info['student_id']) ?></td>
+                                            <td><?= $student_info['SY'] ?>-<?= htmlspecialchars($student_info['Student_id']) ?></td>
                                         </tr>
                                         <tr>
                                             <th>Student Name</th>
@@ -77,7 +81,7 @@
                                         </tr>
                                         <tr>
                                             <th style="width: 200px;">School Year/Semester</th>
-                                            <td><?= $student_info['sy'] ?> <?= $student_info['semester'] == 1 ? '1st' : ($student_info['semester'] == 2 ? '2nd' : $student_info['semester'] . 'th') ?> Semester</td>
+                                            <td><?= $student_info['sy'] ?> <?= $student_info['sem'] == 1 ? '1st' : ($student_info['sem'] == 2 ? '2nd' : $student_info['sem'] . 'th') ?> Semester</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -148,16 +152,18 @@
 
             </div>
 
-            <footer class="sticky-footer bg-white">
+          
+        </div>
+
+        
+    </div>
+  <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
                         <span>Copyright &copy; Your Website 2021</span>
                     </div>
                 </div>
             </footer>
-        </div>
-    </div>
-
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>

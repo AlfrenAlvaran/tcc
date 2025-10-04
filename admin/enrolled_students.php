@@ -27,9 +27,8 @@ ORDER BY s.Student_LName;
 
 
     $results = $database->view($sql);
-    // echo "<pre>";
-    // print_r($results);
-    // echo "</pre>";
+
+  
     ?>
 </head>
 
@@ -54,10 +53,10 @@ ORDER BY s.Student_LName;
                                         <tr>
                                             <th>Student ID</th>
                                             <th>Name</th>
+                                            <th>Program</th>
                                             <th>Year Level</th>
                                             <th>Semester</th>
                                             <th>School Year</th>
-                                            <th>Curriculum ID</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -66,10 +65,10 @@ ORDER BY s.Student_LName;
                                             <tr>
                                                 <td><?= htmlspecialchars($row['sy']) ?>-<?= htmlspecialchars($row['Student_id']) ?></td>
                                                 <td><?= htmlspecialchars($row["Student_LName"]) ?>, <?= htmlspecialchars($row["Student_FName"]) ?> <?= htmlspecialchars($row["Student_MName"]) ?></td>
+                                                <td><?= htmlspecialchars($row['p_code']) ?></td>
                                                 <td><?= htmlspecialchars($row['yr_level']) ?></td>
                                                 <td><?= htmlspecialchars($row['sem']) ?></td>
                                                 <td><?= htmlspecialchars($row['sy']) ?></td>
-                                                <td><?= htmlspecialchars($row['p_code']) ?></td>
                                                 <td>
                                                     <a class="btn btn-info fas fa-edit fa-sm text-white" href="view-curriculum.php?id=<?= urlencode($row['Student_id']) ?>">View</a>
                                                 </td>
