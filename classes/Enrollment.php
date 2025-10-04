@@ -13,7 +13,7 @@ class Enrollment
         try {
             $stmt = $this->conn->prepare($sql);
             $stmt->execute($params);
-            return $stmt->fetch(PDO::FETCH_ASSOC); 
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             die("SQL Error: " . $e->getMessage() . " in query: " . $sql);
         }
@@ -61,27 +61,27 @@ class Enrollment
     }
     public function getStudentsWithEnrollments()
     {
+      
         $sql = "SELECT 
-                s.user_id,
-                s.Student_id, 
-                s.Student_FName, 
-                s.Student_LName, 
-                s.prog_id,
-                s.SY, 
-                p.p_code,
-                c.cur_year,
-                e.id AS id, 
-                e.sem AS sem, 
-                e.sy AS sy
-            FROM students s
-            JOIN programs p ON s.prog_id = p.program_id
-            JOIN curriculum c ON s.prog_id = c.cur_program_id
-            LEFT JOIN enrollments e ON s.Student_id = e.student_id
-            ORDER BY s.Student_id DESC";
-
+                    e.id,
+                    s.user_id,
+                    s.Student_id,
+                    e.yr_level,
+                    e.sem,
+                    e.yr_level,
+                    e.sy,
+                    s.SY,
+                    s.Student_FName,
+                    s.Student_MName,
+                    s.Student_LName,
+                    p.p_code,
+                    s.prog_id
+                FROM enrollments e
+                INNER JOIN students s ON e.student_id = s.Student_id
+                INNER JOIN programs p ON s.prog_id = p.program_id
+                ORDER BY s.Student_LName;";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
 }

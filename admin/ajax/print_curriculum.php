@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../config/PDOConnection.php';
 
-// ✅ Get PDO connection via your Singleton
+// ✅ Get PDO connection
 $conn = PDOConnection::getInstance()->getConnection();
 
 $student_id = $_GET['student_id'] ?? '';
@@ -19,7 +19,7 @@ $stmt = $conn->prepare("
         CONCAT(st.Student_LName, ', ', st.Student_FName, ' ', st.Student_MName) AS full_name,
         st.SY,
         p.p_des,
-        ec.yr,
+        ec.semester,
         ec.semester,
         ec.sy,
         s.sub_code,
@@ -33,7 +33,7 @@ $stmt = $conn->prepare("
        AND ec.program_id = p.program_id
     JOIN subjects s ON ec.subject_id = s.sub_id
     WHERE st.Student_id = ?
-    ORDER BY ec.yr DESC, ec.semester DESC
+    ORDER BY ec.semester DESC, ec.semester DESC
 ");
 $stmt->execute([$student_id]);
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -43,8 +43,6 @@ if (!$rows) {
 }
 
 $student = $rows[0];
-
-// 🔹 Compute total units (only if subjects exist)
 $subjects = array_filter($rows, fn($r) => !empty($r['sub_code']));
 $totalUnits = $subjects ? array_sum(array_column($subjects, 'units')) : 0;
 ?>
@@ -53,50 +51,82 @@ $totalUnits = $subjects ? array_sum(array_column($subjects, 'units')) : 0;
 
 <head>
     <meta charset="UTF-8">
-    <title>Student Curriculum</title>
+    <title>e-Registration Card</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 40px;
         }
-        h2, h3 {
-            margin-bottom: 5px;
+
+        .school-header {
+            text-align: center;
+            border-bottom: 3px solid black;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
+
+        .school-header img {
+            height: 80px;
+        }
+
+        .school-header h2 {
+            margin: 5px 0;
+        }
+
+        .student-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
         table {
             border-collapse: collapse;
             width: 100%;
             margin-top: 15px;
         }
-        th, td {
+
+        th,
+        td {
             border: 1px solid #333;
             padding: 8px;
             text-align: left;
         }
+
         th {
             background: #eee;
         }
-        .header {
-            margin-bottom: 20px;
+
+        h2.title {
+            text-align: center;
+            margin: 20px 0;
+            text-transform: uppercase;
         }
     </style>
 </head>
 
 <body onload="window.print()">
-    <div class="header">
-        <h2>Curriculum Report</h2>
+    <div class="school-header">
+        <img src="school_logo.png" alt="School Logo"><br>
+        <h2>College of Saint John Paul II</h2>
+        <div>Arts and Sciences</div>
+        <div>Tel: (02)8442-8546 | Website: www.csjpii.edu.ph</div>
+        <div>Facebook Page: fb.com/csjpedu</div>
     </div>
 
-    <h3>Student Information</h3>
-    <p><strong>ID:</strong> <?= htmlspecialchars($student['student_id']) ?></p>
-    <p><strong>Name:</strong> <?= htmlspecialchars($student['full_name']) ?></p>
-    <p><strong>School Year:</strong> <?= htmlspecialchars($student['SY']) ?></p>
+    <div class="student-info">
+        <div>
+            <p><strong>Student No.:</strong> S<?= htmlspecialchars(substr($student['SY'], -2)) . '-' . str_pad($student['student_id'], 4, "0", STR_PAD_LEFT) ?></p>
+            <p><strong>Name:</strong> <?= htmlspecialchars($student['full_name']) ?></p>
+        </div>
+        <div style="text-align:right;">
+            <p><strong>Date Enrolled:</strong> <?= date("F j, Y") ?></p>
+            <p><strong>School Year/Semester:</strong> <?= htmlspecialchars($student['sy']) ?> <?= $student['semester'] ?> Semester</p>
+            <p><strong>Course:</strong> <?= htmlspecialchars($student['p_des']) ?></p>
+        </div>
+    </div>
 
-    <h3>Program Information</h3>
-    <p><strong>Program:</strong> <?= htmlspecialchars($student['p_des']) ?></p>
-    <p><strong>Year:</strong> <?= $student['yr'] ?: $cur_year ?> | 
-       <strong>Semester:</strong> <?= $student['semester'] ?: $sem ?></p>
+    <h2 class="title">e-Registration Card</h2>
 
-    <h3>Enrolled Subjects</h3>
     <table>
         <thead>
             <tr>
@@ -117,7 +147,7 @@ $totalUnits = $subjects ? array_sum(array_column($subjects, 'units')) : 0;
                     </tr>
                 <?php endforeach; ?>
                 <tr>
-                    <td colspan="2"><strong>Total Units</strong></td>
+                    <td colspan="2" style="text-align:right;"><strong>Total Units:</strong></td>
                     <td colspan="2"><strong><?= $totalUnits ?></strong></td>
                 </tr>
             <?php else: ?>
@@ -128,4 +158,5 @@ $totalUnits = $subjects ? array_sum(array_column($subjects, 'units')) : 0;
         </tbody>
     </table>
 </body>
+
 </html>

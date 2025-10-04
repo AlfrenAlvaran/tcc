@@ -8,7 +8,9 @@
     require_once __DIR__ . '/../classes/Enrollment.php';
     $students = new Enrollment();
     $student_list = $students->getStudentsWithEnrollments();
-   
+    echo "<pre>";
+    print_r($student_list);
+    echo "</pre>";
 
     ?>
 
@@ -71,9 +73,9 @@
                                                 <td><?php echo $student['Student_FName'] . ' ' . $student['Student_LName']; ?></td>
                                                 <td><?php echo $student['p_code']; ?></td>
                                                 <td><?php echo $student['sem']; ?>st Semester</td>
-                                                <td><?php echo $student['cur_year']; ?></td>
+                                                <td><?php echo $student['yr_level']; ?></td>
                                                 <td>
-                                                    <a href="view_student.php?id=<?= $student['user_id']; ?>&student=<?= urlencode($student['Student_FName'] . ' ' . $student['Student_LName']); ?>&year=<?= urlencode($student['cur_year']); ?>&sem=<?= urlencode($student['sem']); ?>&progID=<?= urlencode($student['prog_id']); ?>&student_id=<?= urlencode($student['Student_id']); ?>" class="btn btn-info btn-sm">View</a>
+                                                    <a href="view_student.php?id=<?= $student['user_id']; ?>&student=<?= urlencode($student['Student_FName'] . ' ' . $student['Student_LName']); ?>&year=<?= urlencode($student['yr_level']); ?>&sem=<?= urlencode($student['sem']); ?>&progID=<?= urlencode($student['prog_id']); ?>&student_id=<?= urlencode($student['Student_id']); ?>" class="btn btn-info btn-sm">View</a>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

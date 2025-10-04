@@ -211,7 +211,7 @@ GROUP BY s.user_id;
           AND cc.cc_sem = ?
     ";
 
-        return $this->GetData($sql, [$studentId, $programId, $curYear, $sem], false); 
+        return $this->GetData($sql, [$studentId, $programId, $curYear, $sem], false);
     }
 
 
@@ -264,11 +264,11 @@ GROUP BY s.user_id;
 
 
 
-    public function enroll_curriculum(string $std_id, int $prog_id, int $cur_year, int $sem, array $subjects): array
+    public function enroll_curriculum(string $std_id, int $prog_id, int $sem, array $subjects): array
     {
         $std_id = str_pad($std_id, 4, '0', STR_PAD_LEFT);
 
-        if (empty($std_id) || $prog_id <= 0 || $cur_year <= 0 || $sem <= 0 || empty($subjects)) {
+        if (empty($std_id) || $prog_id <= 0 || $sem <= 0 || empty($subjects)) {
             return [
                 'success' => false,
                 'message' => 'Invalid input',
@@ -295,9 +295,9 @@ GROUP BY s.user_id;
 
                 $stmt = $this->conn->prepare("
                     SELECT COUNT(*) FROM enrolled_curriculum
-                    WHERE student_id = ? AND program_id = ? AND yr = ? AND semester = ? AND subject_id = ?
+                    WHERE student_id = ? AND program_id = ? AND semester = ? AND subject_id = ?
                 ");
-                $stmt->execute([$std_id, $prog_id, $cur_year, $sem, $sub_id]);
+                $stmt->execute([$std_id, $prog_id, $sem, $sub_id]);
 
                 if ($stmt->fetchColumn() > 0) {
                     $skipped++;
@@ -306,10 +306,10 @@ GROUP BY s.user_id;
 
 
                 $stmt = $this->conn->prepare("
-                    INSERT INTO enrolled_curriculum (student_id, program_id, yr, semester, subject_id, sy)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                    INSERT INTO enrolled_curriculum (student_id, program_id,  semester, subject_id, sy)
+                    VALUES (?, ?, ?, ?, ?)
                 ");
-                $stmt->execute([$std_id, $prog_id, $cur_year, $sem, $sub_id, $range]);
+                $stmt->execute([$std_id, $prog_id, $sem, $sub_id, $range]);
                 $inserted++;
             }
 
@@ -362,7 +362,8 @@ GROUP BY s.user_id;
 
     public function getCurriculumByStudent($id)
     {
-        $stmt = $this->conn->prepare("SELECT * FROM enrolled_curriculum WHERE student_id = ?");
+        // $stmt = $this->conn->prepare("SELECT * FROM enrolled_curriculum WHERE student_id = ?");
+        $stmt = $this->conn->prepare("SELECT ec.*, s.Student_FName, s.Student_MName, s.Student_LName, p.p_code, s.SY FROM enrolled_curriculum ec JOIN students s ON ec.student_id = s.Student_id JOIN programs p ON ec.program_id = p.program_id WHERE ec.student_id = ?");
         $stmt->execute([$id]);
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach ($res as $key => $value) {
