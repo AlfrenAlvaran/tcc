@@ -12,7 +12,7 @@ SELECT
     e.id,
     s.Student_id,
     e.yr_level,
-    MAX(e.sem) AS sem,
+    e.sem AS sem,
     e.yr_level,
     e.sy,
     s.Student_FName,

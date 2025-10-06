@@ -23,6 +23,7 @@ class Enrollment
 
     public function enrollStudent(int $studentID, int $curriculumID, int $yr_level, int $sem, string $sy)
     {
+        $studentID = str_pad($studentID, 4, '0', STR_PAD_LEFT);
         $stmt = $this->conn->prepare("INSERT INTO enrollments (student_id, curriculum_id, yr_level, sem, sy) VALUES (?, ?, ?, ?, ?)");
         return $stmt->execute([$studentID, $curriculumID, $yr_level, $sem, $sy]);
     }

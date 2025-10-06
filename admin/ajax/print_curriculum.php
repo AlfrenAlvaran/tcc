@@ -32,9 +32,10 @@ $stmt = $conn->prepare("
        AND ec.program_id = p.program_id
     JOIN subjects s ON ec.subject_id = s.sub_id
     WHERE st.Student_id = ?
+    AND ec.semester = ?
     ORDER BY ec.semester DESC, ec.semester DESC
 ");
-$stmt->execute([$student_id]);
+$stmt->execute([$student_id, $sem]);
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (!$rows) {
@@ -105,11 +106,10 @@ $totalUnits = $subjects ? array_sum(array_column($subjects, 'units')) : 0;
 
 <body onload="window.print()">
     <div class="school-header">
-        <img src="school_logo.png" alt="School Logo"><br>
-        <h2>College of Saint John Paul II</h2>
-        <div>Arts and Sciences</div>
-        <div>Tel: (02)8442-8546 | Website: www.csjpii.edu.ph</div>
-        <div>Facebook Page: fb.com/csjpedu</div>
+        <img src="../../img/tcc_logo.jpg" alt="School Logo"><br>
+        <h2>Tomas Claudio Colleges</h2>
+        <div>Morong Rizal</div>
+       
     </div>
 
     <div class="student-info">

@@ -264,7 +264,7 @@ GROUP BY s.user_id;
 
 
 
-    public function enroll_curriculum(string $std_id, int $prog_id, int $sem, array $subjects): array
+    public function enroll_curriculum(string $std_id, int $prog_id, int $sem, array $subjects, int $cur_year): array
     {
         $std_id = str_pad($std_id, 4, '0', STR_PAD_LEFT);
 
@@ -306,10 +306,10 @@ GROUP BY s.user_id;
 
 
                 $stmt = $this->conn->prepare("
-                    INSERT INTO enrolled_curriculum (student_id, program_id,  semester, subject_id, sy)
-                    VALUES (?, ?, ?, ?, ?)
+                    INSERT INTO enrolled_curriculum (student_id, program_id,  semester, subject_id, sy, level)
+                    VALUES (?, ?, ?, ?, ?, ?)
                 ");
-                $stmt->execute([$std_id, $prog_id, $sem, $sub_id, $range]);
+                $stmt->execute([$std_id, $prog_id, $sem, $sub_id, $range, $cur_year]);
                 $inserted++;
             }
 
@@ -360,18 +360,50 @@ GROUP BY s.user_id;
         }
     }
 
-    public function getCurriculumByStudent($id)
+    public function getCurriculumByStudent($studentId)
     {
-        $stmt = $this->conn->prepare("SELECT ec.*, s.Student_FName, s.Student_MName, s.Student_LName, p.p_code, s.SY FROM enrolled_curriculum ec JOIN students s ON ec.student_id = s.Student_id JOIN programs p ON ec.program_id = p.program_id WHERE ec.student_id = ?");
-        $stmt->execute([$id]);
-        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($res as $key => $value) {
-            $subjects = $this->getSubjectsEnrolled($value['subject_id']);
-            $res[$key]['subjects'] = $subjects;
-        }
-        return $res;
-    }
+        $stmt = $this->conn->prepare("
+            SELECT 
+                ec.level,
+                ec.semester,
+                ec.sy,
+                ec.program_id,
+                p.p_code
+            FROM enrolled_curriculum ec
+            JOIN programs p ON ec.program_id = p.program_id
+            WHERE ec.student_id = ?
+            GROUP BY ec.level, ec.semester, ec.sy, ec.program_id
+            ORDER BY ec.level ASC, ec.semester ASC
+        ");
+        $stmt->execute([$studentId]);
+        $enrollments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        foreach ($enrollments as $key => $row) {
+            $subjectsStmt = $this->conn->prepare("
+                SELECT 
+                    s.sub_id,
+                    s.sub_code,
+                    s.sub_name,
+                    s.units,
+                    s.withLab
+                FROM enrolled_curriculum ec
+                JOIN subjects s ON ec.subject_id = s.sub_id
+                WHERE ec.student_id = ?
+                  AND ec.level = ?
+                  AND ec.semester = ?
+                  AND ec.sy = ?
+            ");
+            $subjectsStmt->execute([
+                $studentId,
+                $row['level'],
+                $row['semester'],
+                $row['sy']
+            ]);
+            $enrollments[$key]['subjects'] = $subjectsStmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        return $enrollments;
+    }
     public function getSubjectsEnrolled($id)
     {
         $stmt = $this->conn->prepare("SELECT * FROM subjects WHERE sub_id = ?");
@@ -390,8 +422,9 @@ GROUP BY s.user_id;
         }
     }
 
-    public function getStudentBasicInfo($id) {
-        $stmt =$this->conn->prepare("SELECT s.*, p.*, e.* FROM students s JOIN programs p ON s.prog_id = p.program_id JOIN enrollments e ON s.Student_id = e.student_id WHERE s.Student_id = ?");
+    public function getStudentBasicInfo($id)
+    {
+        $stmt = $this->conn->prepare("SELECT s.*, p.*, e.* FROM students s JOIN programs p ON s.prog_id = p.program_id JOIN enrollments e ON s.Student_id = e.student_id WHERE s.Student_id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }

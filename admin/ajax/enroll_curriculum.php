@@ -7,11 +7,11 @@ header('Content-Type: application/json');
 try {
     $student_id = $_POST['student_id'] ?? '';
     $prog_id    = (int) ($_POST['prog_id'] ?? 0);
-    // $cur_year   = (int) ($_POST['cur_year'] ?? 0);
+    $cur_year   = (int) ($_POST['cur_year'] ?? 0);
     $sem        = (int) ($_POST['sem'] ?? 0);
     $subjects   = json_decode($_POST['subjects'] ?? '[]', true);
 
-    $result = $students->enroll_curriculum($student_id, $prog_id, $sem, $subjects);
+    $result = $students->enroll_curriculum($student_id, $prog_id, $sem, $subjects, $cur_year);
 
     echo json_encode($result);
 } catch (Exception $e) {
