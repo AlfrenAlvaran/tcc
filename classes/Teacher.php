@@ -112,13 +112,13 @@ class Teacher extends Database
         foreach ($all_slots as $slot) {
             $conflict = false;
             foreach ($occupied as $o) {
-               
+
                 $slotStart = strtotime($slot[0]);
                 $slotEnd   = strtotime($slot[1]);
                 $occStart  = strtotime($o['time_start']);
                 $occEnd    = strtotime($o['time_end']);
 
-               
+
                 if ($slotStart >= $occStart && $slotEnd <= $occEnd) {
                     $conflict = true;
                     break;
