@@ -17,8 +17,6 @@ class Students
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
-
     public function getSubjectsBySemesterYear($studentID, $year, $semester) {
          $stmt = $this->conn->prepare("
             SELECT 
