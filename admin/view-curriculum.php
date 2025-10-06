@@ -59,6 +59,7 @@ $student_info = $curriculum->getStudentBasicInfo(id: $std_id);
                             <?php if ($student_info): ?>
                                 <table class="table table-borderless table-sm mb-0">
                                     <tbody>
+                                       
                                         <tr>
                                             <th style="width: 150px;">Student No.</th>
                                             <td><?= $student_info['SY'] ?>-<?= htmlspecialchars($student_info['Student_id']) ?></td>

@@ -149,6 +149,7 @@ class Students
             s.birthday,
             s.age,
             s.gender,
+            s.SY,
 
             -- Program Info
             p.program_id,
@@ -194,7 +195,7 @@ class Students
 
         if (!$row) return null;
 
-        // Grouped arrays for clarity
+  
         $student = [
             'Student_id'       => $row['Student_id'],
             'Student_LName'    => $row['Student_LName'],
@@ -207,6 +208,7 @@ class Students
             'birthday'         => $row['birthday'],
             'age'              => $row['age'],
             'gender'           => $row['gender'],
+            'SY'               => $row['SY'],
         ];
 
         $program = [

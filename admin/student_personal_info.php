@@ -5,9 +5,16 @@
     <?php
     session_start();
     include("includes/header.php");
-    // include("../config/database.php");
-    require_once __DIR__ . '/../classes/Enrollment.php';
+    require_once __DIR__ . '/../classes/Students.php';
+    require_once __DIR__ . '/../helpers/prev.php';
+    $info = new Students();
+    $student_id = $_GET['id'] ?? null;
+    $info  = $info->getPersonalInfo($student_id);
 
+    $student = $info['student'];
+    $personal = $info['personal'];
+    $uploads = $info['uploads'];
+    print_pre($personal);
 
     ?>
 
@@ -51,14 +58,49 @@
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header p-4 d-flex align-items-center">
-                            <i class="fas fa-fw fa-folder fa-lg text-primary me-2"></i>
+                            <i class="fas fa-fw fa-folder fa-lg text-primary mr-2"></i>
                             <h6 class="m-0 font-weight-bold text-primary text-uppercase">
-                                Student Personal Information
+                                View Student Information
                             </h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <!-- content -->
+
+                                <table class="table table-striped table-borderless">
+                                    <h1 style="font-size: large;"><i class="fas fa-fw fa-user"></i>Student Personal Information</h1>
+                                    <tr>
+                                        <th style="width: 200px;">Student Picture</th>
+                                        <?php if (!empty($uploads['profile'])): ?>
+                                            <td><img src="<?php echo $uploads['profile']; ?>" alt="Student Picture" class="img-fluid" style="max-width: 150px;"></td>
+                                        <?php else: ?>
+                                            <td><img src="./../img/unknown.jpg" alt="Unknown"></td>
+                                        <?php endif; ?>
+                                    </tr>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <td><?php echo $student['SY'] . "-" . $student['Student_id']; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <td><?= $student['Student_FName']. " " . $student['Student_MName'] . " " . $student['Student_LName'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Date of Birth</th>
+                                        <td><?= $student['birthday'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Gender</th>
+                                        <td><?= $student['gender'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address</th>
+                                        <td><?= $personal['address'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>LRN/ULI</th>
+                                        <td><?= $personal['LRN'] ?></td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                     </div>
