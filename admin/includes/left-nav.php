@@ -50,6 +50,7 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="students.php">Add Students</a>
                 <a class="collapse-item" href="enrolled_students.php">Enroll Students</a>
+                <a class="collapse-item" href="student_information.php">Students Information</a>
             </div>
         </div>
     </li>
