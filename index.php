@@ -50,7 +50,7 @@ session_start();
 							header("refresh:0;url=admin/index.php");
 							break;
 						case '7':
-							header("refresh:0;url=teachers/index.php");
+							header("refresh:0;url=teacher/index.php");
 							break;
 						case '3':
 							header("refresh:0;url=student/index.php");
