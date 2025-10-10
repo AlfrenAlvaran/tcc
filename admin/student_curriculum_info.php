@@ -84,38 +84,74 @@ $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
                         <?php endif; ?>
 
                         <div class="card shadow mt-3">
-                            <div class="card-body">
-                                <div class="table table-borderless table-sm">
-                                    <?php
-                                    if (!empty($taken)) {
-                                        foreach ($taken as $row) {
-                                            if (empty($row['subjects'])) continue;
+                            <?php
+                            if (!empty($taken)) {
+                                foreach ($taken as $row) {
+                                    if (empty($row['subjects'])) continue;
 
-                                            $year = (int)$row['level'];
-                                            $sem = (int)$row['semester'];
-                                            $schoolYear = $row['sy'];
+                                    $year = (int)$row['level'];
+                                    $sem = (int)$row['semester'];
+                                    $schoolYear = $row['sy'];
 
-                                            if($year <= 0 || $sem <= 0) {
-                                                continue; 
-                                            }
-                                            
-
-                                        
-                                        $yearLabel = $year == 1 ? "1st Year" : ($year == 2 ? "2nd Year" : ($year == 3 ? "3rd Year" : $year . "th Year"));
-                                           
-                                        }
-
-                                    
+                                    if ($year <= 0 || $sem <= 0) {
+                                        continue;
                                     }
-                                    ?>
 
-                                    
-                                </div>
+
+
+                                    $yearLabel = $year == 1 ? "1st Year" : ($year == 2 ? "2nd Year" : ($year == 3 ? "3rd Year" : $year . "th Year"));
+                                    $semLabel = $sem == 1 ? "1st Semester" : ($sem == 2 ? "2nd Semester" : $sem . "th Semester");
+                                    $semKey = "$yearLabel - $semLabel (S.Y. {$schoolYear})";
+
+                                    $grouped[$semKey][] = $row;
+                                }
+                            }
+                            ?>
+
+                            <div class="card-body">
+                                <span class="text-primary mb-3">
+                                    <?= $yearLabel . " " . $semLabel ?>
+                                </span>
+                                <table class="table table-borderless table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Subject Code</th>
+                                            <th>Subject Name</th>
+                                            <th>Units</th>
+                                            <th>With Lab</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (!empty($grouped)): ?>
+                                            <?php foreach ($grouped as $sem => $rows): ?>
+                                                <?php foreach ($rows as $r) : ?>
+
+                                                   <?php foreach($r['subjects'] as $sub) :?>
+                                                    <tr>
+                                                        <td><?= $sub['sub_code'] ?></td>
+                                                        <td><?= $sub['sub_name'] ?></td>
+                                                        <td class="text-center"><?= $sub['units'] ?></td>
+                                                        <td class="text-center"><?= $sub['withLab'] ? 'Yes' : 'No' ?></td>
+                                                        <td class="text-center">Taken</td>
+                                                    </tr>
+                                                   <?php endforeach ?>
+
+                                                <?php endforeach ?>
+                                            <?php endforeach; ?>
+                                            <?php  ?>
+
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
                         <div class="card shadow mt-4">
                             <div class="card-body">
+                                <span class="text-primary">
+                                    Not Taken Subjects
+                                </span>
                                 <table class="table table-borderless table-sm mb-1">
                                     <thead>
                                         <tr>
@@ -123,7 +159,7 @@ $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
                                             <th>Subject Name</th>
                                             <th class="">Units</th>
                                             <th class="">With Lab</th>
-                                            <th class="">Actions</th>
+                                            <th class="">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -132,9 +168,9 @@ $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
                                                 <tr>
                                                     <td><?= htmlspecialchars($subject['sub_code']) ?></td>
                                                     <td><?= htmlspecialchars($subject['sub_name']) ?></td>
-                                                    <td class="text-center"><?= htmlspecialchars($subject['units']) ?></td>
-                                                    <td class="text-center"><?= $subject['withLab'] ? 'Yes' : 'No' ?></td>
-                                                    <td class="text-center">
+                                                    <td class=""><?= htmlspecialchars($subject['units']) ?></td>
+                                                    <td class=""><?= $subject['withLab'] ? 'Yes' : 'No' ?></td>
+                                                    <td class="">
                                                         Not Taken
                                                     </td>
                                                 </tr>
