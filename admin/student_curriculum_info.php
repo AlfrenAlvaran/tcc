@@ -6,15 +6,16 @@ $notTakenCurriculum = new NotTakenCurriculum();
 $program_id = (int) $_GET['program'];
 $studentID = (string) $_GET['id'];
 $student_info = $notTakenCurriculum->getStudentBasicInfo($studentID);
-// $students = $notTakenCurriculum->getAllStudentNotEnrolled($studentID, $program_id);
-$notTakenSubjects=$notTakenCurriculum->notTakenSubjects($studentID, $program_id);
+$curriculumId = (int) $student_info['cur_id'];
+// echo $curriculumId;
+$notTakenSubjects = $notTakenCurriculum->notTakenSubjects($studentID, $curriculumId);
 
-echo '<pre>';
-// print_r($student_info);
-print_r($notTakenSubjects);
-echo '</pre>';
+$takenSubjects = $notTakenCurriculum->takenSubjects($studentID);
+$taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
 
-
+// echo '<pre>';
+// print_r($taken);
+// echo '</pre>';
 ?>
 
 <!DOCTYPE html>
@@ -81,6 +82,73 @@ echo '</pre>';
                                 </tbody>
                             </table>
                         <?php endif; ?>
+
+                        <div class="card shadow mt-3">
+                            <div class="card-body">
+                                <div class="table table-borderless table-sm">
+                                    <?php
+                                    if (!empty($taken)) {
+                                        foreach ($taken as $row) {
+                                            if (empty($row['subjects'])) continue;
+
+                                            $year = (int)$row['level'];
+                                            $sem = (int)$row['semester'];
+                                            $schoolYear = $row['sy'];
+
+                                            if($year <= 0 || $sem <= 0) {
+                                                continue; 
+                                            }
+                                            
+
+                                        
+                                        $yearLabel = $year == 1 ? "1st Year" : ($year == 2 ? "2nd Year" : ($year == 3 ? "3rd Year" : $year . "th Year"));
+                                           
+                                        }
+
+                                    
+                                    }
+                                    ?>
+
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card shadow mt-4">
+                            <div class="card-body">
+                                <table class="table table-borderless table-sm mb-1">
+                                    <thead>
+                                        <tr>
+                                            <th>Subject Code</th>
+                                            <th>Subject Name</th>
+                                            <th class="">Units</th>
+                                            <th class="">With Lab</th>
+                                            <th class="">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (!empty($notTakenSubjects)): ?>
+                                            <?php foreach ($notTakenSubjects as $subject): ?>
+                                                <tr>
+                                                    <td><?= htmlspecialchars($subject['sub_code']) ?></td>
+                                                    <td><?= htmlspecialchars($subject['sub_name']) ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($subject['units']) ?></td>
+                                                    <td class="text-center"><?= $subject['withLab'] ? 'Yes' : 'No' ?></td>
+                                                    <td class="text-center">
+                                                        Not Taken
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <tr>
+                                                <td colspan="5" class="text-center">No subjects available to add.</td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 <!-- /.container-fluid -->

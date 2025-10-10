@@ -18,6 +18,7 @@ SELECT
     s.Student_FName,
     s.Student_MName,
     s.Student_LName,
+    s.SY,
     p.p_code
 FROM enrollments e
 INNER JOIN students s ON e.student_id = s.Student_id
@@ -27,8 +28,8 @@ ORDER BY s.Student_LName;
 
 
     $results = $database->view($sql);
-
-  
+// echo '<pre>';print_r($results);
+// echo '</pre>';
     ?>
 </head>
 
@@ -63,7 +64,7 @@ ORDER BY s.Student_LName;
                                     <tbody>
                                         <?php foreach ($results as $row) { ?>
                                             <tr>
-                                                <td><?= htmlspecialchars($row['sy']) ?>-<?= htmlspecialchars($row['Student_id']) ?></td>
+                                                <td><?= htmlspecialchars($row['SY']) ?>-<?= htmlspecialchars($row['Student_id']) ?></td>
                                                 <td><?= htmlspecialchars($row["Student_LName"]) ?>, <?= htmlspecialchars($row["Student_FName"]) ?> <?= htmlspecialchars($row["Student_MName"]) ?></td>
                                                 <td><?= htmlspecialchars($row['p_code']) ?></td>
                                                 <td><?= htmlspecialchars($row['yr_level']) ?></td>

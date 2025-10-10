@@ -98,7 +98,7 @@ $student_info = $curriculum->getStudentBasicInfo(id: $std_id);
                                     $grouped = [];
 
                                     foreach ($curriculum_data as $row) {
-                                        // ✅ skip if this enrollment has no subjects
+                                        
                                         if (empty($row['subjects'])) continue;
 
                                         $year = (int)$row['level'];
