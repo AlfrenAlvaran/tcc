@@ -102,7 +102,7 @@
         </div>
 
         <div class="col-md-4 mb-3">
-            <a href="logout.php" class="text-decoration-none">
+            <a href="ajax/logout.php" class="text-decoration-none">
                 <div class="card text-center shadow h-100 bg-danger text-white">
                     <div class="card-body d-flex flex-column justify-content-center">
                         <i class="bi bi-box-arrow-right display-4 mb-3"></i>

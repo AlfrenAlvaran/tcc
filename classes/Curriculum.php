@@ -429,3 +429,4 @@ GROUP BY s.user_id;
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
+

@@ -5,5 +5,6 @@
         <a href="student_schedule.php" class="list-group-item list-group-item-action bg-light">Student Schedule</a>
         <a href="grades.php" class="list-group-item list-group-item-action bg-light">Grade Viewing</a>
         <a href="curriculum.php" class="list-group-item list-group-item-action bg-light">Student Curriculum</a>
+        <a href="ajax/logout.php" class="list-group-item list-group-item-action bg-light">Logout</a>
     </div>
 </aside>

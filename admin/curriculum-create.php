@@ -422,6 +422,7 @@
 									</tr>
 									<tr>
 										<td colspan=11><button type="submit" class="btn btn-primary btn-md btn-block">Save</button>
+									</tr>
 								</table>
 							</form>
 						</fieldset>
