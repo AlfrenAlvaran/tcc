@@ -1,5 +1,14 @@
 <?php require_once __DIR__ . "/includes/header.php" ?>
 
+<?php
+require_once __DIR__ . "/../classes/Encode.php";
+$encode = new Encode();
+
+$class=$encode->getStudentAssignedSubjects($_SESSION['id']);
+
+?>
+
+
 <main class="container mt-5">
     <div class="row g-3">
         <div class="col-md-4 mb-3">

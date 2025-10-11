@@ -49,8 +49,9 @@ $classes = new Classes();
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <?php foreach ($classes->getClasses($id) as $class): ?>
+                                        <?php foreach ($classes->getClasses($id) as $class): ?>
+                                            <tr>
+
                                                 <td class="text-nowrap"><?php echo htmlspecialchars($class['schedule_id']); ?></td>
                                                 <td><?php echo htmlspecialchars($class['p_code'] . ' - ' . $class['p_year']); ?></td>
                                                 <td><?php echo htmlspecialchars($class['sub_name']); ?></td>
@@ -60,8 +61,8 @@ $classes = new Classes();
                                                         class="btn btn-primary btn-sm">View</a>
 
                                                 </td>
-                                            <?php endforeach; ?>
-                                        </tr>
+                                            </tr>
+                                        <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>

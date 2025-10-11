@@ -11,8 +11,7 @@ class Classes
 
     public function getClasses($id)
     {
-        $stmt = $this->conn->prepare("
-        SELECT 
+        $stmt = $this->conn->prepare("SELECT 
             sc.id AS schedule_id,
             subj.sub_code,
             subj.sub_name,

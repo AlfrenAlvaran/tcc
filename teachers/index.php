@@ -10,6 +10,7 @@ require_once __DIR__ . '/../classes/Teacher.php';
 $teacher = new Teacher();
 $tables = $teacher->showTable();
 
+
 ?>
 
 <body id="page-top">

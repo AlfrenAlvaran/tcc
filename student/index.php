@@ -5,10 +5,13 @@ require_once __DIR__ . "/../classes/Students.php";
 
 $student = new Students();
 $semesters = $student->getSemestersEnrolled($student_id);
+
+
+
 ?>
 
 <div class="container my-4">
-     <
+     
     <div class="d-flex justify-content-center mt-4 flex-column align-items-center">
         <select name="semester" id="semester" class="form-control w-50">
             <option value="">- Select Semester -</option>

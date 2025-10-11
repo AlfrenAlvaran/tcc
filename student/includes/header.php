@@ -11,7 +11,11 @@ if (!isset($_SESSION['email']) || empty($_SESSION['email'])) {
 
 $session = $_SESSION['email'];
 $student_id = substr($session, -4);
-
+require_once __DIR__ . "/classes/Encode.php";
+$encode = new Encode();
+// echo $_SESSION['id'];
+$class = $encode->getStudentAssignedSubjects($_SESSION['id']);
+print_r($class);
 
 ?>
 

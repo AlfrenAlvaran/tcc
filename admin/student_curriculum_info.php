@@ -42,11 +42,11 @@ $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
             <!-- Main Content -->
             <div id="content">
 
-                <!-- Topbar -->
+                <!-- Top bar -->
                 <?php
                 include("includes/top-bar.php");
                 ?>
-                <!-- End of Topbar -->
+                <!-- End of Top bar -->
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
