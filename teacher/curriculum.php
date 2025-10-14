@@ -17,20 +17,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>S25-0001</td>
-                        <td>Alfren</td>
-                        <td>Balan</td>
-                        <td>Alvaran</td>
-                        <td>BSCS</td>
-                        <td class="d-flex g-4">
-                            <select name="semesterAndYear" id="" class="form-control form-select-sm mr-2">
-                                <option value="">1st Sem SY 2023-2024</option>
-                                <option value="">2nd Sem SY 2023-2024</option>
-                            </select>
-                            <button class="btn btn-primary btn-sm">View</button>
-                        </td>
-                    </tr>
+                  
                 </tbody>
             </table>
         </div>

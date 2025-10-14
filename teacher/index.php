@@ -5,6 +5,7 @@ require_once __DIR__ . "/../classes/Encode.php";
 $encode = new Encode();
 
 $class=$encode->getStudentAssignedSubjects($_SESSION['id']);
+print_r($class);
 
 ?>
 

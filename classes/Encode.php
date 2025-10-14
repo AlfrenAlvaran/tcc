@@ -40,4 +40,7 @@ class Encode
         $stmt->execute([$id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
+    
 }
