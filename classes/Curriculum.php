@@ -55,6 +55,110 @@ GROUP BY s.user_id;
         return $stmt->fetchAll();
     }
 
+
+    public function notTakenSubjects(string $studentID)
+    {
+        $stmt = $this->conn->prepare("SELECT prog_id FROM students WHERE Student_id = ? LIMIT 1");
+        $stmt->execute([$studentID]);
+        $student = $stmt->fetch();
+
+        if($student) {
+            return [];
+        }
+
+
+        $programID = (int) $student['prog_id'];
+        $stmt = $this->conn->prepare("SELECT cur_id FROM curriculum WHERE cur_program_id ? LIMIT 1");
+        $stmt->execute([$programID]);
+        $curriculum = $stmt->fetch();
+
+        if(!$curriculum) {
+            return [];
+        }
+
+        $curriculumID = (int) $curriculum['cur_id'];
+
+        $stmtCur = $this->conn->prepare(
+            "SELECT s.sub_id, s.sub_code, s.sub_name, s.units, s.withLab, cc.cc_year, cc.cc_sem
+              FROM curriculum_content cc
+              JOIN subjects s ON cc.cc_course_id = s.sub_id
+              WHERE cc.curr_id = :curriculumID
+              AND s.sub_id NOT IN (
+              SELECT subject_id FROM enrolled_curriculum WHERE student_id = :studentID
+              )
+              ORDER BY cc.cc_year, cc.cc_sem
+            "
+        );
+        $stmtCur->execute(['curriculumID' => $curriculumID, 'studentID' => $studentID]);
+        return $stmtCur->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    public function getNotTakenSubjectsByStudent(string $studentId): array
+{
+    // Step 1: Get student's program ID
+    $stmt = $this->conn->prepare("
+        SELECT prog_id 
+        FROM students 
+        WHERE Student_id = ?
+        LIMIT 1
+    ");
+    $stmt->execute([$studentId]);
+    $student = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$student) {
+        return [];
+    }
+
+    $programId = (int)$student['prog_id'];
+
+    // Step 2: Get the corresponding curriculum for that program
+    $stmt = $this->conn->prepare("
+        SELECT cur_id 
+        FROM curriculum 
+        WHERE cur_program_id = ?
+        LIMIT 1
+    ");
+    $stmt->execute([$programId]);
+    $curriculum = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$curriculum) {
+        return [];
+    }
+
+    $curriculumId = (int)$curriculum['cur_id'];
+
+    // Step 3: Get subjects from that curriculum not yet taken by the student
+    $sql = "
+        SELECT 
+            s.sub_id,
+            s.sub_code,
+            s.sub_name,
+            s.units,
+            s.withLab,
+            cc.cc_year,
+            cc.cc_sem
+        FROM curriculum_content cc
+        JOIN subjects s ON cc.cc_course_id = s.sub_id
+        WHERE cc.curr_id = :curriculumId
+          AND s.sub_id NOT IN (
+              SELECT subject_id 
+              FROM enrolled_curriculum 
+              WHERE student_id = :studentId
+          )
+        ORDER BY cc.cc_year, cc.cc_sem
+    ";
+
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute([
+        'curriculumId' => $curriculumId,
+        'studentId' => $studentId
+    ]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
     public function recordCurriculum(int $studentId, int $subjectId)
     {
         $stmt = $this->conn->prepare(
@@ -429,4 +533,3 @@ GROUP BY s.user_id;
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
-

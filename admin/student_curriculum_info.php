@@ -92,7 +92,7 @@ $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
                             ?>
 
                             <div class="card-body">
-                                <h5 class="text-primary mb-3">Taken Subjects</h5>
+                               
                                 <table class="table table-borderless table-sm">
                                     <thead>
                                         <tr>
@@ -116,7 +116,7 @@ $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
                                                             <td><?= htmlspecialchars($sub['sub_name']) ?></td>
                                                             <td class="text-center"><?= htmlspecialchars($sub['units']) ?></td>
                                                             <td class="text-center"><?= $sub['withLab'] ? 'Yes' : 'No' ?></td>
-                                                            <td class="text-center text-success">✓ Taken</td>
+                                                            <td class="text-center text-success">✓</td>
                                                         </tr>
                                                     <?php endforeach; ?>
                                                 <?php endforeach; ?>
@@ -132,7 +132,7 @@ $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
                         <!-- NOT TAKEN SUBJECTS -->
                         <div class="card shadow mt-4">
                             <div class="card-body">
-                                <h5 class="text-primary mb-3">Not Taken Subjects</h5>
+                               
                                 <table class="table table-borderless table-sm mb-1">
                                     <thead>
                                         <tr>

@@ -82,7 +82,7 @@
                                                 <select name="sub" class="form-control form-control-sm"
                                                     id="subjectDropdown">
                                                     <option value="">--- Select Subject ---</option>
-                                                    <?php foreach ($students->getSubject() as $subject): ?>
+                                                    <?php foreach ($students->getNotTakenSubjectsByStudent((string)$_GET['student_id']) as $subject): ?>
                                                         <option value="<?= $subject['sub_id'] ?>">
                                                             <?= $subject['sub_code'] . ' - ' . $subject['sub_name'] . ' - units ' . $subject['units'] ?>
                                                         </option>
@@ -105,7 +105,7 @@
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary"><?= $_GET['student'] ?></h6>
                             <div class="float-right">
-                                <button class="btn btn-primary btn-sm" id="addCurriculum">Add Curriculum</button>
+                                <button class="btn btn-primary btn-sm" id="addCurriculum">Save</button>
                             </div>
                         </div>
                         <div class="card-body">
