@@ -60,7 +60,7 @@ class NotTakenCurriculum
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function takenSubjects(string $studentId)
+    public function takenSubjects(string $studentId): array
     {
         $sql = "
         SELECT 
@@ -128,4 +128,5 @@ class NotTakenCurriculum
 
         return $enrollments;
     }
+
 }
