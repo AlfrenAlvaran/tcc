@@ -1,5 +1,9 @@
 <?php
 
+// echo __DIR__ . "/../../classes/Students.php";
+
+require_once __DIR__ . "/../../classes/Students.php";
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -11,11 +15,11 @@ if (!isset($_SESSION['email']) || empty($_SESSION['email'])) {
 
 $session = $_SESSION['email'];
 $student_id = substr($session, -4);
-require_once __DIR__ . "/classes/Encode.php";
+require_once __DIR__ . "/../../classes/Encode.php";
 $encode = new Encode();
 // echo $_SESSION['id'];
 $class = $encode->getStudentAssignedSubjects($_SESSION['id']);
-print_r($class);
+// print_r($class);
 
 ?>
 
