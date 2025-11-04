@@ -14,7 +14,7 @@
     $student = $info['student'];
     $personal = $info['personal'];
     $uploads = $info['uploads'];
-    print_pre($personal);
+    // print_pre($personal);
 
     ?>
 

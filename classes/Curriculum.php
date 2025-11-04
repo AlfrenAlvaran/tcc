@@ -326,8 +326,7 @@ GROUP BY s.user_id;
         int $curYear,
         int $sem
     ) {
-        $sql = "
-        SELECT 
+        $sql = "SELECT 
             st.Student_id,
             st.user_id,
             s.sub_id,

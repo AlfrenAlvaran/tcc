@@ -19,6 +19,7 @@
 	$course = $database->view($sql);
 	//print_r($course);
 
+
 	//Year=1, Sem=1
 	$sql = "SELECT * FROM curriculum_content as cc, subjects as su 
 	         WHERE cc.cc_year=1 AND cc.cc_sem=1 AND cc.cc_course_id=su.sub_id AND cc.curr_id=" . $_GET['id'];

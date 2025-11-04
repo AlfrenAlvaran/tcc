@@ -11,7 +11,8 @@ $student_info = $notTakenCurriculum->getStudentBasicInfo($studentID);
 $curriculumId = (int) $student_info['cur_id'];
 
 $notTakenSubjects = $notTakenCurriculum->notTakenSubjects($studentID, $curriculumId);
-$taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
+// $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
+$taken = $notTakenCurriculum->studentCurriculum($studentID);
 ?>
 
 <!DOCTYPE html>
@@ -61,7 +62,7 @@ $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
                         <?php endif; ?>
 
                         <!-- TAKEN SUBJECTS -->
-                        <div class="card shadow mt-3">
+                        <!-- <div class="card shadow mt-3">
                             <?php
                             $grouped = [];
 
@@ -127,10 +128,10 @@ $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- NOT TAKEN SUBJECTS -->
-                        <div class="card shadow mt-4">
+                        <!-- <div class="card shadow mt-4">
                             <div class="card-body">
                                
                                 <table class="table table-borderless table-sm mb-1">
@@ -162,6 +163,47 @@ $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
                                     </tbody>
                                 </table>
                             </div>
+                        </div> -->
+
+
+                        <div class="card shadow mt-3">
+                            <div class="card-body">
+                                <table class="table table-borderless table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Subject Code</th>
+                                            <th>Subject Name</th>
+                                            <th>Units</th>
+                                            <th>With Lab</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (!empty($taken)): ?>
+                                            <?php foreach ($taken as $semKey => $rows): ?>
+                                                <tr class="table-primary">
+                                                    <td colspan="5"><strong><?= $semKey ?></strong></td>
+                                                </tr>
+                                                <?php foreach ($rows as $sub): ?>
+                                                    <tr>
+                                                        <td><?= htmlspecialchars($sub['sub_code']) ?></td>
+                                                        <td><?= htmlspecialchars($sub['sub_name']) ?></td>
+                                                        <td class="text-center"><?= htmlspecialchars($sub['units']) ?></td>
+                                                        <td class="text-center"><?= $sub['withLab'] ? 'Yes' : 'No' ?></td>
+                                                        <td class="text-center <?= $sub['status'] === '✓' ? 'text-success' : 'text-danger' ?>">
+                                                            <?= $sub['status'] ?>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <tr>
+                                                <td colspan="5" class="text-center">No subjects found in curriculum.</td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                     </div>
@@ -185,4 +227,5 @@ $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
     <?php include("includes/logout-modal.php"); ?>
     <?php include("includes/js-link.php"); ?>
 </body>
+
 </html>
