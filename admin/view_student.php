@@ -6,6 +6,7 @@
     session_start();
     include("includes/header.php");
     require_once __DIR__ . '/../classes/Curriculum.php';
+    require_once __DIR__ . "/../classes/Students.php";
     $students = new Curriculum();
     $sy = (int) $_GET['year'] ?? 0;
     $sem = (int) $_GET['sem'] ?? 0;
@@ -16,6 +17,8 @@
     // print_r($getSubjects);
     // echo "</pre>";
 
+    $student = new Students();
+    $semesters = $student->getSemestersEnrolled($_GET['student_id']);
 
     $advisedSubjects = $students->getSubjectsWithAdvising((int)$_GET['student_id'], (int)$_GET['id'], (int)$_GET['progID'], $sy, $sem);
 
@@ -33,6 +36,9 @@
             true // fetch single subject
         );
     }
+
+
+    $student_id = $_SESSION['id'];
 
 
     ?>
@@ -90,7 +96,7 @@
                                                 </select>
                                             </td>
                                             <td>
-                                                <button type="button" class="btn btn-primary btn-sm"
+                                                <button type="button" class="btn btn-primary btn-sm" style="width: 200px;"
                                                     id="addSubject">Add</button>
                                             </td>
                                         </tr>
@@ -105,7 +111,7 @@
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary"><?= $_GET['student'] ?></h6>
                             <div class="float-right">
-                                <button class="btn btn-primary btn-sm" id="addCurriculum">Save</button>
+                                <button class="btn btn-primary btn-sm" id="addCurriculum" style="width: 200px;">Save</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -124,6 +130,44 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Advised Subject</h6>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <div class="d-flex justify-content-center mt-4 flex-column align-items-center">
+                                    <select name="semester" id="semester" class="form-control w-50">
+                                        <option value="">- Select Semester -</option>
+                                        <?php foreach ($semesters as $semester): ?>
+                                            <option value="<?= $semester['yr_level'] ?>-<?= $semester['sem'] ?>">
+                                                <?= $semester['sy'] ?> —
+                                                <?= $semester['sem'] == 1 ? '1st Semester' : ($semester['sem'] == 2 ? '2nd Semester' : $semester['sem']) ?>
+                                                (Year <?= $semester['yr_level'] ?>)
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+
+                                    <table class="table mt-5 text-center table-bordered advised-table">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Subject Code</th>
+                                                <th>Subject Name</th>
+                                                <th>Units</th>
+                                                <th>With Lab</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="advised-table-body"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
 
                 </div>
@@ -251,7 +295,47 @@
             })
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const select = document.getElementById("semester");
+            const studentID = <?= json_encode($student_id) ?>;
+            const tbody = document.querySelector(".advised-table-body .advised-table");
 
+            select.addEventListener("change", async () => {
+                const value = select.value;
+                if (!value) return;
+
+                const [year, sem] = value.split("-");
+                console.log("Fetching for:", studentID, year, sem);
+
+                const res = await fetch(`api/fetch_subjects.php?student_id=${studentID}&year=${year}&sem=${sem}`);
+                const data = await res.json();
+
+                console.log("Subjects:", data);
+                tbody.innerHTML = "";
+
+                if (!data.length) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-muted">No subjects found</td></tr>`;
+                    return;
+                }
+
+
+                data.forEach((enrollment, index) => {
+                    enrollment.subjects.forEach((subject, subIndex) => {
+                        tbody.insertAdjacentHTML("beforeend", `
+                    <tr>
+                        <td>${subIndex + 1}</td>
+                        <td>${subject.sub_code}</td>
+                        <td>${subject.sub_name}</td>
+                        <td>${subject.units}</td>
+                        <td>${subject.withLab == 1 ? "Yes" : "No"}</td>
+                    </tr>
+                `);
+                    });
+                });
+            });
+        });
+    </script>
 
 
 </body>

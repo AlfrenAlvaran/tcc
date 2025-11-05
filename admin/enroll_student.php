@@ -69,75 +69,72 @@ $curriculum = $enrollment->getCurriculumByStudent((int)$student['user_id']);
                             </h6>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-0 d-none d-lg-block bg-register-image"></div>
-                                <div class="col-lg-3"></div>
-                                <div class="col-lg-6">
-                                    <div class="p-5">
-                                        <div class="text-center">
-                                            <h1 class="h4 text-gray-900 mb-4">Enroll Student</h1>
+                            <!-- <div class="d-flex "> -->
+                            <!-- <div class="col-lg-0 d-none d-lg-block bg-register-image"></div>
+                                <div class="col-lg-3"></div> -->
+                            <!-- <div class="col-lg-12"> -->
+                            <div class="d-flex justify-content-start">
+                                <div class="p-5 " style="width: 100%;">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">Enroll Student</h1>
+                                    </div>
+
+                                    <form action="ajax/enroll_stud.php?status=1" method="POST" class="user">
+                                        <!-- hidden curriculum ids -->
+                                        <?php foreach ($curriculum as $cur): ?>
+                                            <input type="hidden" name="cur_id[]" value="<?= $cur['cur_id']; ?>">
+                                        <?php endforeach; ?>
+
+
+
+                                        <div class="mb-3 d-flex align-items-center">
+                                            <span>Student ID: <?= htmlspecialchars($student['SY']); ?> <?= htmlspecialchars($student['Student_id']); ?></span>
                                         </div>
 
-                                        <form action="ajax/enroll_stud.php?status=1" method="POST" class="user">
-                                            <!-- hidden curriculum ids -->
-                                            <?php foreach ($curriculum as $cur): ?>
-                                                <input type="hidden" name="cur_id[]" value="<?= $cur['cur_id']; ?>">
-                                            <?php endforeach; ?>
+                                        <div class="mb-3">
+                                            <input type="text" name="cname" readonly
+                                                value="<?= htmlspecialchars($student["Student_LName"] . ", " . $student["Student_FName"] . " " . $student["Student_MName"]); ?>"
+                                                class="form-control">
+                                        </div>
 
-                                            <div class="form-group row">
-                                                <div class="col-sm-3 mb-1 mb-sm-0">
-                                                    Student ID: <?= htmlspecialchars($student['SY']); ?>
-                                                </div>
-                                                <div class="col-sm-2 mb-1 mb-sm-0">
-                                                    <input type="text" readonly name="stid"
-                                                        value="<?= htmlspecialchars($student['Student_id']); ?>"
-                                                        class="form-control">
-                                                </div>
-                                                <div class="col-sm-1 mb-1 mb-sm-0"></div>
-                                                <div class="col-sm-6 mb-3 mb-sm-0">
-                                                    <input type="text" name="cname" readonly
-                                                        value="<?= htmlspecialchars($student["Student_LName"] . ", " . $student["Student_FName"] . " " . $student["Student_MName"]); ?>"
-                                                        class="form-control">
-                                                </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm-3">
+                                                <select class="form-control" required name="semester" id="course">
+                                                    <option value="" selected>Semester</option>
+                                                    <option value="1">1st Semester</option>
+                                                    <option value="2">2nd Semester</option>
+                                                </select>
                                             </div>
 
-                                            <div class="form-group row">
-                                                <div class="col-sm-6">
-                                                    <select class="form-control" required name="semester" id="course">
-                                                        <option value="" selected>Semester</option>
-                                                        <option value="1">1st Semester</option>
-                                                        <option value="2">2nd Semester</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <?php
-                                                    $current_year = date("Y");
-                                                    $next_year = $current_year + 1;
-                                                    $sy = $current_year . '-' . $next_year;
-                                                    ?>
-                                                    <input type="text" name="sy" readonly value="<?= $sy; ?>"
-                                                        class="form-control">
-                                                </div>
-                                            </div>
-                                            <div class="form-group row">
-                                                <div class="col-sm-6">
-                                                    <select name="yr_level" id="" class="form-control">
-                                                        <option value="" selected>Year Level</option>
-                                                        <option value="1">1st Year</option>
-                                                        <option value="2">2nd Year</option>
-                                                        <option value="3">3rd Year</option>
-                                                        <option value="4">4th Year</option>
-                                                    </select>
-                                                </div>
+                                            <div class="col-sm-6">
+                                                <select name="yr_level" id="" class="form-control">
+                                                    <option value="" selected>Year Level</option>
+                                                    <option value="1">1st Year</option>
+                                                    <option value="2">2nd Year</option>
+                                                    <option value="3">3rd Year</option>
+                                                    <option value="4">4th Year</option>
+                                                </select>
                                             </div>
 
-                                            <input type="submit" name="enroll" value="Submit"
-                                                class="btn btn-primary btn-user btn-block">
-                                        </form>
+                                            <div class="col-sm-3">
+                                                <?php
+                                                $current_year = date("Y");
+                                                $next_year = $current_year + 1;
+                                                $sy = $current_year . '-' . $next_year;
+                                                ?>
+                                                <input type="text" name="sy" readonly value="<?= $sy; ?>"
+                                                    class="form-control">
+                                            </div>
+                                        </div>
 
-                                    </div>
+
+                                        <input type="submit" name="enroll" value="Submit"
+                                            class="btn btn-primary btn-user btn-block">
+                                    </form>
+
                                 </div>
                             </div>
+                            <!-- </div> -->
                         </div>
                     </div>
 
