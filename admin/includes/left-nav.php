@@ -1,7 +1,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php" style="font-size: 16px;">
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
@@ -12,18 +12,18 @@
     <hr class="sidebar-divider my-0">
 
     <!-- Nav Item - Dashboard -->
-    <li class="nav-item active">
+    <li class="nav-item active" >
         <a class="nav-link" href="index.php">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span>
+            <span style="font-size: 16px;">Dashboard</span>
         </a>
     </li>
 
     <!-- Nav Item - Curriculum -->
     <li class="nav-item">
-        <a class="nav-link" href="curriculum.php">
+        <a class="nav-link" href="curriculum.php" >
             <i class="fas fa-fw fa-book"></i>
-            <span>Curriculum</span>
+            <span style="font-size: 16px;">Curriculum</span>
         </a>
     </li>
 
@@ -32,7 +32,7 @@
     <li class="nav-item">
         <a class="nav-link" href="advising.php">
             <i class="fas fa-fw fa-book"></i>
-            <span>Advising</span>
+            <span style="font-size: 16px;">Advising</span>
         </a>
     </li>
 
@@ -44,14 +44,14 @@
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseStudents"
             aria-expanded="false" aria-controls="collapseStudents">
             <i class="fas fa-fw fa-user-graduate"></i>
-            <span>Students</span>
+            <span style="font-size: 16px;">Students</span>
         </a>
         <div id="collapseStudents" class="collapse" aria-labelledby="headingStudents" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="students.php">Add Students</a>
-                <a class="collapse-item" href="enrolled_students.php">Enroll Students</a>
-                <a class="collapse-item" href="student_information.php">Students Information</a>
-                <a class="collapse-item" href="student_curriculum.php">Students Curriculum</a>
+                <a class="collapse-item" href="students.php" style="font-size: 15px;">Add Students</a>
+                <a class="collapse-item" href="enrolled_students.php" style="font-size: 15px;">Enroll Students</a>
+                <a class="collapse-item" href="student_information.php" style="font-size: 15px;">Students Information</a>
+                <a class="collapse-item" href="student_curriculum.php" style="font-size: 15px;">Students Curriculum</a>
             </div>
         </div>
     </li>
@@ -61,13 +61,13 @@
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSettings"
             aria-expanded="false" aria-controls="collapseSettings">
             <i class="fas fa-fw fa-cogs"></i>
-            <span>Settings</span>
+            <span style="font-size: 16px;">Settings</span>
         </a>
         <div id="collapseSettings" class="collapse" aria-labelledby="headingSettings" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Departments</a>
-                <a class="collapse-item" href="courses.php">Courses</a>
-                <a class="collapse-item" href="subjects.php">Subjects</a>
+                <a class="collapse-item" href="#" style="font-size: 15px;">Departments</a>
+                <a class="collapse-item" href="courses.php" style="font-size: 15px;">Courses</a>
+                <a class="collapse-item" href="subjects.php" style="font-size: 15px;">Subjects</a>
             </div>
         </div>
     </li>
@@ -77,12 +77,12 @@
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTeachers"
             aria-expanded="false" aria-controls="collapseTeachers">
             <i class="fas fa-fw fa-chalkboard-teacher"></i>
-            <span>Teachers</span>
+            <span style="font-size: 16px;">Teachers</span>
         </a>
         <div id="collapseTeachers" class="collapse" aria-labelledby="headingTeachers" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="teachers.php">Teachers</a>
-                <a class="collapse-item" href="assigned_subjects.php">Assign Subjects</a>
+                <a class="collapse-item" href="teachers.php" style="font-size: 15px;">Teachers</a>
+                <a class="collapse-item" href="assigned_subjects.php" style="font-size: 15px;">Assign Subjects</a>
             </div>
         </div>
 
@@ -92,7 +92,7 @@
     <li class="nav-item">
         <a class="nav-link" href="users.php">
             <i class="fas fa-fw fa-users"></i>
-            <span>Users</span>
+            <span style="font-size: 16px;">Users</span>
         </a>
     </li>
 
@@ -100,7 +100,7 @@
     <li class="nav-item">
         <a class="nav-link" href="#">
             <i class="fas fa-fw fa-history"></i>
-            <span>Logs</span>
+            <span style="font-size: 16px;">Logs</span>
         </a>
     </li>
 

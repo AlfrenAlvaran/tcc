@@ -59,7 +59,7 @@
 					<!-- Content Row -->
 
 					<!-- DataTales Example -->
-					<div class="card shadow mb-4">
+					<div class="card shadow mb-4 d-flex justify-content-left">
 						<div class="card-header py-3">
 							<h6 class="m-0 font-weight-bold text-primary"><a href="students.php">Back</a></h6>
 							<div class=""></div>
