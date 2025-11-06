@@ -68,6 +68,7 @@
                 <a class="collapse-item" href="#" style="font-size: 15px;">Departments</a>
                 <a class="collapse-item" href="courses.php" style="font-size: 15px;">Courses</a>
                 <a class="collapse-item" href="subjects.php" style="font-size: 15px;">Subjects</a>
+                <a class="collapse-item" href="section.php" style="font-size: 15px;">Section</a>
             </div>
         </div>
     </li>
@@ -82,7 +83,7 @@
         <div id="collapseTeachers" class="collapse" aria-labelledby="headingTeachers" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="teachers.php" style="font-size: 15px;">Teachers</a>
-                <a class="collapse-item" href="assigned_subjects.php" style="font-size: 15px;">Assign Subjects</a>
+                <!-- <a class="collapse-item" href="assigned_subjects.php" style="font-size: 15px;">Assign Subjects</a> -->
             </div>
         </div>
 
@@ -98,10 +99,12 @@
 
     <!-- Nav Item - Logs -->
     <li class="nav-item">
-        <a class="nav-link" href="#">
-            <i class="fas fa-fw fa-history"></i>
-            <span style="font-size: 16px;">Logs</span>
+        <a class="nav-link" href="announcement.php">
+            <i class="fas fa-fw fa-bullhorn"></i>
+            <span style="font-size: 16px;">Announcement</span>
         </a>
     </li>
+
+    
 
 </ul>

@@ -70,7 +70,7 @@ $class = $encode->getStudentAssignedSubjects($_SESSION['id']);
 
             <!-- Right: Logout Button -->
             <div>
-                <a href="../logout.php" class="btn btn-outline-danger btn-sm">Logout</a>
+                <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout</a>
             </div>
         </div>
     </header>

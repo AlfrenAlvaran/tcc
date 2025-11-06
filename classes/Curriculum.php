@@ -62,7 +62,7 @@ GROUP BY s.user_id;
         $stmt->execute([$studentID]);
         $student = $stmt->fetch();
 
-        if($student) {
+        if ($student) {
             return [];
         }
 
@@ -72,7 +72,7 @@ GROUP BY s.user_id;
         $stmt->execute([$programID]);
         $curriculum = $stmt->fetch();
 
-        if(!$curriculum) {
+        if (!$curriculum) {
             return [];
         }
 
@@ -95,41 +95,41 @@ GROUP BY s.user_id;
 
 
     public function getNotTakenSubjectsByStudent(string $studentId): array
-{
-    // Step 1: Get student's program ID
-    $stmt = $this->conn->prepare("
+    {
+        // Step 1: Get student's program ID
+        $stmt = $this->conn->prepare("
         SELECT prog_id 
         FROM students 
         WHERE Student_id = ?
         LIMIT 1
     ");
-    $stmt->execute([$studentId]);
-    $student = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->execute([$studentId]);
+        $student = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$student) {
-        return [];
-    }
+        if (!$student) {
+            return [];
+        }
 
-    $programId = (int)$student['prog_id'];
+        $programId = (int)$student['prog_id'];
 
-    // Step 2: Get the corresponding curriculum for that program
-    $stmt = $this->conn->prepare("
+        // Step 2: Get the corresponding curriculum for that program
+        $stmt = $this->conn->prepare("
         SELECT cur_id 
         FROM curriculum 
         WHERE cur_program_id = ?
         LIMIT 1
     ");
-    $stmt->execute([$programId]);
-    $curriculum = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->execute([$programId]);
+        $curriculum = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$curriculum) {
-        return [];
-    }
+        if (!$curriculum) {
+            return [];
+        }
 
-    $curriculumId = (int)$curriculum['cur_id'];
+        $curriculumId = (int)$curriculum['cur_id'];
 
-    // Step 3: Get subjects from that curriculum not yet taken by the student
-    $sql = "
+        // Step 3: Get subjects from that curriculum not yet taken by the student
+        $sql = "
         SELECT 
             s.sub_id,
             s.sub_code,
@@ -149,14 +149,14 @@ GROUP BY s.user_id;
         ORDER BY cc.cc_year, cc.cc_sem
     ";
 
-    $stmt = $this->conn->prepare($sql);
-    $stmt->execute([
-        'curriculumId' => $curriculumId,
-        'studentId' => $studentId
-    ]);
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            'curriculumId' => $curriculumId,
+            'studentId' => $studentId
+        ]);
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 
     public function recordCurriculum(int $studentId, int $subjectId)
@@ -530,5 +530,51 @@ GROUP BY s.user_id;
         $stmt = $this->conn->prepare("SELECT s.*, p.*, e.* FROM students s JOIN programs p ON s.prog_id = p.program_id JOIN enrollments e ON s.Student_id = e.student_id WHERE s.Student_id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function createAnnouncement($title, $date, $time, $by)
+    {
+        $stmt = $this->conn->prepare("INSERT INTO announcement_tb (title, date, time, create_at) VALUES (?, ?, ?, ?)");
+        return $stmt->execute([$title, $date, $time, $by]);
+    }
+
+
+    public function getAnnouncements()
+    {
+        $stmt = $this->conn->prepare("SELECT * FROM announcement_tb ORDER BY create_at DESC");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    public function getCurriculum($student_id, $program_id, $level, $semester)
+    {
+        $stmt = $this->conn->prepare("SELECT 
+            ec.student_id,
+            ec.subject_id,
+            ec.program_id,
+            ec.semester,
+            ec.level,
+            ec.sy,
+            s.sub_id,
+            s.sub_code,
+            s.sub_name,
+            s.units
+        FROM enrolled_curriculum ec
+        INNER JOIN subjects s ON ec.subject_id = s.sub_id
+        WHERE ec.student_id = ?
+        AND ec.program_id = ?
+        AND ec.level = ?
+        AND ec.semester = ?
+    ");
+
+        $stmt->execute([$student_id, $program_id, $level, $semester]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function deleteSubject($id)
+    {
+        $stmt = $this->conn->prepare("DELETE FROM enrolled_curriculum WHERE subject_id = ?");
+        return $stmt->execute([$id]);
     }
 }

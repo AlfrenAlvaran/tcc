@@ -11,6 +11,8 @@ class Encode
         $this->conn = PDOConnection::getInstance()->getConnection();
     }
 
+
+   
     public function getStudentAssignedSubjects($id)
     {
         $stmt = $this->conn->prepare("SELECT 

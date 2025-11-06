@@ -38,8 +38,6 @@
     }
 
 
-    $student_id = $_SESSION['id'];
-
 
     ?>
     <!-- DataTables CSS -->
@@ -140,16 +138,7 @@
                         <div class="card-body">
                             <div class="table-responsive">
                                 <div class="d-flex justify-content-center mt-4 flex-column align-items-center">
-                                    <select name="semester" id="semester" class="form-control w-50">
-                                        <option value="">- Select Semester -</option>
-                                        <?php foreach ($semesters as $semester): ?>
-                                            <option value="<?= $semester['yr_level'] ?>-<?= $semester['sem'] ?>">
-                                                <?= $semester['sy'] ?> —
-                                                <?= $semester['sem'] == 1 ? '1st Semester' : ($semester['sem'] == 2 ? '2nd Semester' : $semester['sem']) ?>
-                                                (Year <?= $semester['yr_level'] ?>)
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
+
 
                                     <table class="table mt-5 text-center table-bordered advised-table">
                                         <thead>
@@ -159,9 +148,12 @@
                                                 <th>Subject Name</th>
                                                 <th>Units</th>
                                                 <th>With Lab</th>
+                                                <td>Action</td>
                                             </tr>
                                         </thead>
-                                        <tbody class="advised-table-body"></tbody>
+                                        <tbody class="advised-table-body">
+
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -297,45 +289,71 @@
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const select = document.getElementById("semester");
-            const studentID = <?= json_encode($student_id) ?>;
-            const tbody = document.querySelector(".advised-table-body .advised-table");
+            const tbody = document.querySelector(".advised-table-body");
+            const studentIDString = <?= json_encode($_GET['student_id']) ?>;
+            const programID = <?= json_encode($_GET['progID']) ?>;
+            const year = <?= json_encode($_GET['year']) ?>;
+            const sem = <?= json_encode($_GET['sem']) ?>;
 
-            select.addEventListener("change", async () => {
-                const value = select.value;
-                if (!value) return;
+            fetchSubjects(studentIDString, programID, year, sem);
 
-                const [year, sem] = value.split("-");
-                console.log("Fetching for:", studentID, year, sem);
-
-                const res = await fetch(`api/fetch_subjects.php?student_id=${studentID}&year=${year}&sem=${sem}`);
+            async function fetchSubjects(studentIDString, programID, year, sem) {
+                const res = await fetch(`api/get-curriculum.php?student_id=${studentIDString}&progID=${programID}&year=${year}&sem=${sem}`);
                 const data = await res.json();
 
-                console.log("Subjects:", data);
-                tbody.innerHTML = "";
+                tbody.innerHTML = '';
 
-                if (!data.length) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="text-muted">No subjects found</td></tr>`;
+                if (!data.length || !data[0].subjects.length) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-muted">No subjects found</td></tr>`;
                     return;
                 }
 
+                data[0].subjects.forEach((subject, index) => {
+                    tbody.insertAdjacentHTML("beforeend", `
+                <tr data-id="${subject.sub_id}">
+                    <td>${index + 1}</td>
+                    <td>${subject.sub_code}</td>
+                    <td>${subject.sub_name}</td>
+                    <td>${subject.units}</td>
+                    <td>${subject.withLab == 1 ? "Yes" : "No"}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm remove-subject">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `);
+                });
 
-                data.forEach((enrollment, index) => {
-                    enrollment.subjects.forEach((subject, subIndex) => {
-                        tbody.insertAdjacentHTML("beforeend", `
-                    <tr>
-                        <td>${subIndex + 1}</td>
-                        <td>${subject.sub_code}</td>
-                        <td>${subject.sub_name}</td>
-                        <td>${subject.units}</td>
-                        <td>${subject.withLab == 1 ? "Yes" : "No"}</td>
-                    </tr>
-                `);
+                // 🧠 Attach listeners *after* inserting the rows
+                tbody.querySelectorAll(".remove-subject").forEach(button => {
+                    button.addEventListener("click", async (e) => {
+                        const row = e.target.closest("tr");
+                        const subjectID = row.dataset.id;
+
+                        if (!confirm("Are you sure you want to remove this subject?")) return;
+
+                        const res = await fetch(`api/remove_subject.php?id=${subjectID}`, {
+                            method: "DELETE"
+                        });
+
+                        const result = await res.json();
+                        console.log(result)
+
+                        if (result.success) {
+                            row.remove();
+                            alert("Subject removed successfully!");
+
+                             fetchSubjects(studentIDString, programID, year, sem);
+                        } else {
+                            alert("Failed to remove subject: " + result.message);
+                        }
                     });
                 });
-            });
+            }
         });
     </script>
+
 
 
 </body>

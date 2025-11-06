@@ -1,86 +1,69 @@
+<?php require_once "./includes/header.php"; ?>
 <?php
-
-require_once "./includes/header.php";
-
-
-
-
-$student = new Students();
-$semesters = $student->getSemestersEnrolled($student_id);
-
-
+require_once __DIR__ . "/../classes/Curriculum.php";
+$curriculum = new Curriculum();
+$announcements = $curriculum->getAnnouncements();
 
 ?>
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
 
+    .announcement-card {
+        border-left: 4px solid #0d6efd;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .announcement-card:hover {
+        background-color: #e9f3ff;
+        transform: translateY(-3px);
+    }
+
+    .announcement-title {
+        font-weight: 600;
+        color: #0d6efd;
+        margin-bottom: 4px;
+    }
+
+    .announcement-date {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 2px;
+    }
+
+    .announcement-author {
+        font-size: 0.9rem;
+        color: #495057;
+    }
+</style>
 <div class="container my-4">
 
-    <div class="d-flex justify-content-center mt-4 flex-column align-items-center">
-        <select name="semester" id="semester" class="form-control w-50">
-            <option value="">- Select Semester -</option>
-            <?php foreach ($semesters as $semester): ?>
-                <option value="<?= $semester['yr_level'] ?>-<?= $semester['sem'] ?>">
-                    <?= $semester['sy'] ?> —
-                    <?= $semester['sem'] == 1 ? '1st Semester' : ($semester['sem'] == 2 ? '2nd Semester' : $semester['sem']) ?>
-                    (Year <?= $semester['yr_level'] ?>)
-                </option>
-            <?php endforeach; ?>
-        </select>
+    <div class="container py-5">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">📢 Announcements</h2>
+        </div>
 
-        <table class="table mt-5 text-center table-bordered">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Subject Code</th>
-                    <th>Subject Name</th>
-                    <th>Units</th>
-                    <th>With Lab</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <div class="row g-3">
+            <!-- Announcement Item -->
+            <?php foreach ($announcements as $announce): ?>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card announcement-card p-3 shadow-sm">
+                        <div class="announcement-title"><?= $announce['title'] ?></div>
+                        <div class="announcement-date"><?= $announce['date'] ?></div>
+                        <div class="announcement-author">Created by: <?= $announce['create_at'] ?></div>
+                    </div>
+                </div>
+
+            <?php endforeach; ?>
+
+
+
+        </div>
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const select = document.getElementById("semester");
-        const studentID = <?= json_encode($student_id) ?>;
-        const tbody = document.querySelector("table tbody");
 
-        select.addEventListener("change", async () => {
-            const value = select.value;
-            if (!value) return;
-
-            const [year, sem] = value.split("-");
-            console.log("Fetching for:", studentID, year, sem);
-
-            const res = await fetch(`api/fetch_subjects.php?student_id=${studentID}&year=${year}&sem=${sem}`);
-            const data = await res.json();
-
-            console.log("Subjects:", data);
-            tbody.innerHTML = "";
-
-            if (!data.length) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-muted">No subjects found</td></tr>`;
-                return;
-            }
-
-
-            data.forEach((enrollment, index) => {
-                enrollment.subjects.forEach((subject, subIndex) => {
-                    tbody.insertAdjacentHTML("beforeend", `
-                    <tr>
-                        <td>${subIndex + 1}</td>
-                        <td>${subject.sub_code}</td>
-                        <td>${subject.sub_name}</td>
-                        <td>${subject.units}</td>
-                        <td>${subject.withLab == 1 ? "Yes" : "No"}</td>
-                    </tr>
-                `);
-                });
-            });
-        });
-    });
-</script>
 
 <?php require_once "./includes/footer.php"; ?>

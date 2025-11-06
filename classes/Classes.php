@@ -50,5 +50,10 @@ class Classes
         $stmt->execute([$id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
+    public function saveSection(array $data)
+    {
+        $stmt = $this->conn->prepare("INSERT INTO section_tb (section_name, year_level) VALUES (?, ?)");
+        return $stmt->execute([$data['section_name'], $data['year_level']]);
+    }
 }

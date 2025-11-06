@@ -4,12 +4,16 @@ include("includes/header.php");
 
 require_once __DIR__ . '/../classes/Enrollment.php';
 $enrollment = new Enrollment();
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    die("Student not found. Missing ID in URL.");
+}
 
-
+$student_id = str_pad($_GET['id'], 4, '0', STR_PAD_LEFT);
 $student = $enrollment->GetData(
     "SELECT * FROM students WHERE Student_id = ?",
-    [$_GET['id']]
+    [$student_id]
 );
+
 
 if (!$student) {
     die("Student not found.");
@@ -85,6 +89,8 @@ $curriculum = $enrollment->getCurriculumByStudent((int)$student['user_id']);
                                             <input type="hidden" name="cur_id[]" value="<?= $cur['cur_id']; ?>">
                                         <?php endforeach; ?>
 
+                                         <input type="hidden" name="stid" value="<?= (int)$student['Student_id']; ?>">
+
 
 
                                         <div class="mb-3 d-flex align-items-center">
@@ -105,7 +111,7 @@ $curriculum = $enrollment->getCurriculumByStudent((int)$student['user_id']);
                                                     <option value="2">2nd Semester</option>
                                                 </select>
                                             </div>
-
+                                           
                                             <div class="col-sm-6">
                                                 <select name="yr_level" id="" class="form-control">
                                                     <option value="" selected>Year Level</option>
@@ -116,7 +122,7 @@ $curriculum = $enrollment->getCurriculumByStudent((int)$student['user_id']);
                                                 </select>
                                             </div>
 
-                                            <div class="col-sm-3">
+                                             <div class="col-sm-3">
                                                 <?php
                                                 $current_year = date("Y");
                                                 $next_year = $current_year + 1;
@@ -126,7 +132,7 @@ $curriculum = $enrollment->getCurriculumByStudent((int)$student['user_id']);
                                                     class="form-control">
                                             </div>
                                         </div>
-
+                                       
 
                                         <input type="submit" name="enroll" value="Submit"
                                             class="btn btn-primary btn-user btn-block">

@@ -8,7 +8,7 @@ if (isset($_GET['student_id'], $_GET['year'], $_GET['sem'])) {
     $sem = $_GET['sem'];
 
     $student = new Students();
-    $subjects = $student->getSubjectsBySemesterYear($studentId, $year, $sem);
+    $subjects = $student->advised($studentId, $year, $sem);
 
     echo json_encode($subjects);
 } else {

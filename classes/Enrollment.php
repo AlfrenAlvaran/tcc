@@ -19,14 +19,22 @@ class Enrollment
         }
     }
 
-
-
-    public function enrollStudent(int $studentID, int $curriculumID, int $yr_level, int $sem, string $sy)
+    public function enrollStudent($studentID, int $curriculumID, int $yr_level, int $sem, string $sy)
     {
-        $studentID = str_pad($studentID, 4, '0', STR_PAD_LEFT);
-        $stmt = $this->conn->prepare("INSERT INTO enrollments (student_id, curriculum_id, yr_level, sem, sy) VALUES (?, ?, ?, ?, ?)");
-        return $stmt->execute([$studentID, $curriculumID, $yr_level, $sem, $sy]);
+        // Force string conversion before binding
+        $stmt = $this->conn->prepare("
+        INSERT INTO enrollments (student_id, curriculum_id, yr_level, sem, sy)
+        VALUES (?, ?, ?, ?, ?)
+    ");
+        return $stmt->execute([
+            strval(intval($studentID)),  // convert "0005" safely → "5"
+            $curriculumID,
+            $yr_level,
+            $sem,
+            $sy
+        ]);
     }
+
 
     public function getCurriculumByStudent(int $userId)
     {
@@ -61,28 +69,27 @@ class Enrollment
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     public function getStudentsWithEnrollments()
-    {
-      
-        $sql = "SELECT 
-                    e.id,
-                    s.user_id,
-                    s.Student_id,
-                    e.yr_level,
-                    e.sem,
-                    e.yr_level,
-                    e.sy,
-                    s.SY,
-                    s.Student_FName,
-                    s.Student_MName,
-                    s.Student_LName,
-                    p.p_code,
-                    s.prog_id
-                FROM enrollments e
-                INNER JOIN students s ON e.student_id = s.Student_id
-                INNER JOIN programs p ON s.prog_id = p.program_id
-                ORDER BY s.Student_LName;";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+{
+    $sql = "SELECT 
+                s.user_id,
+                s.Student_id,
+                s.SY,
+                s.Student_FName,
+                s.Student_LName,
+                s.prog_id,
+                p.p_code,
+                e.sy,
+                GROUP_CONCAT(DISTINCT CONCAT(e.sem, '-', e.yr_level, '-', e.sy) ORDER BY e.yr_level, e.sem SEPARATOR ',' ) AS sem_year
+                
+            FROM enrollments e
+            INNER JOIN students s ON e.student_id = s.Student_id
+            INNER JOIN programs p ON s.prog_id = p.program_id
+            GROUP BY s.Student_id
+            ORDER BY s.Student_LName;";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }

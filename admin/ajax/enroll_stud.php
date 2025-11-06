@@ -2,41 +2,58 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
 require_once __DIR__ . '/../../classes/Enrollment.php';
 $enrollment = new Enrollment();
 
 $status = $_GET['status'] ?? 0;
+
 if ($status == 1) {
-    $stid     = intval($_POST['stid']);
+    $stid     = $_POST['stid']; // e.g., "0005"
     $semester = intval($_POST['semester']);
     $sy       = $_POST['sy'];
     $cur      = $_POST['cur_id'];
     $yr_level = intval($_POST['yr_level'] ?? 0);
 
-    $existing = $enrollment->GetData("SELECT sem FROM enrollments WHERE student_id = ? AND sy = ? AND yr_level = ?", [$stid, $sy, $yr_level]);
+    // ✅ Convert string ID like "0005" → integer 5 (safe conversion)
+    $stid_int = (int)$stid;
 
+    // ✅ Check for existing enrollment
+    $existing = $enrollment->GetData(
+        "SELECT sem FROM enrollments WHERE student_id = ? AND sy = ? AND yr_level = ?",
+        [$stid_int, $sy, $yr_level]
+    );
+
+    // Normalize $existing result
     if (!is_array($existing)) {
         $existing = [];
-    } else if ($existing['sem'] == $semester) {
+    } elseif (isset($existing['sem'])) {
+        // Single record returned — wrap in array
         $existing = [$existing];
     }
-    $semestersEnrolled = array_column($existing, column_key: 'sem');
+
+    $semestersEnrolled = array_column($existing, 'sem');
+
+    // ✅ Prevent double enrollment in both semesters
     if (in_array(1, $semestersEnrolled) && in_array(2, $semestersEnrolled)) {
         $_SESSION['error'] = "This student has already completed both semesters for Year Level $yr_level ($sy).";
         header("Location: ../enroll_student.php?id=" . $stid);
         exit;
     }
 
-
+    // ✅ Prevent duplicate enrollment in the same semester
     if (in_array($semester, $semestersEnrolled)) {
         $_SESSION['error'] = "This student is already enrolled in Semester $semester for Year Level $yr_level ($sy).";
         header("Location: ../enroll_student.php?id=" . $stid);
         exit;
     }
 
-
+    // ✅ Enroll the student for all curriculum items
     foreach ($cur as $cur_id) {
-        $enrollment->enrollStudent($stid, intval($cur_id), $yr_level, $semester, $sy);
-        header("Location: ../enrolled_students.php");
+        $enrollment->enrollStudent($stid_int, intval($cur_id), $yr_level, $semester, $sy);
     }
+
+    // ✅ Redirect after success
+    header("Location: ../enrolled_students.php");
+    exit;
 }
