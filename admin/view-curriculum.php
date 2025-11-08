@@ -5,10 +5,16 @@ require_once __DIR__ . "/../classes/Curriculum.php";
 
 $std_id = $_GET['id'];
 $curriculum = new Curriculum();
-$curriculum_data = $curriculum->getCurriculumByStudent($std_id);
+$curriculum_data = $curriculum->getSubjectStudent($_GET['id']);
 
-
+// echo '<pre>';
+// print_r($curriculum_data);
+// echo '</pre>';
 $student_info = $curriculum->getStudentBasicInfo(id: $std_id);
+
+// $data = $curriculum->getSubjectStudent($_GET['id']);
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -59,7 +65,7 @@ $student_info = $curriculum->getStudentBasicInfo(id: $std_id);
                             <?php if ($student_info): ?>
                                 <table class="table table-borderless table-sm mb-0">
                                     <tbody>
-                                       
+
                                         <tr>
                                             <th style="width: 150px;">Student No.</th>
                                             <td><?= $student_info['SY'] ?>-<?= htmlspecialchars($student_info['Student_id']) ?></td>
@@ -93,71 +99,54 @@ $student_info = $curriculum->getStudentBasicInfo(id: $std_id);
                     <div class="card shadow mb-4">
                         <div class="card-body">
                             <div class="table-responsive">
-                                <?php
-                                if (!empty($curriculum_data)) {
-                                    $grouped = [];
+                                <?php if (!empty($curriculum_data)): ?>
+                                    <?php
+                                   
+                                    $totalUnits = 0;
+                                    $weightedSum = 0;
+                                    $hasGrades = false;
 
-                                    foreach ($curriculum_data as $row) {
-                                        
-                                        if (empty($row['subjects'])) continue;
-
-                                        $year = (int)$row['level'];
-                                        $semester = (int)$row['semester'];
-                                        $schoolYear = $row['sy'];
-
-                                        if ($year <= 0 || $semester <= 0) continue;
-
-                                        $yearLabel = $year == 1 ? "1st Year" : ($year == 2 ? "2nd Year" : ($year == 3 ? "3rd Year" : $year . "th Year"));
-
-                                        $semLabel = $semester == 1 ? "1st Semester" : ($semester == 2 ? "2nd Semester" : $semester . "th Semester");
-
-                                        $semKey = "$yearLabel - $semLabel (S.Y. {$schoolYear})";
-
-                                        $grouped[$semKey][] = $row;
-                                    }
-
-                                    if (!empty($grouped)) {
-                                        foreach ($grouped as $sem => $rows) {
-                                            echo "<h5 class='text-primary mt-4'>$sem</h5>";
-                                            echo "<table class='table table-striped table-hover align-middle table-bordered'>";
-                                            echo "<thead class='table-light'>
-                                                <tr>
-                                                    <th>Subject Code</th>
-                                                    <th>Subject Name</th>
-                                                    <th class='text-center'>Units</th>
-                                                    <th class='text-center'>With Lab</th>
-                                                    <th class='text-center'>Actions</th>
-                                                </tr>
-                                              </thead>
-                                              <tbody>";
-
-                                            foreach ($rows as $r) {
-                                                foreach ($r['subjects'] as $sub) {
-                                                    echo "<tr>";
-                                                    echo "<td>" . htmlspecialchars($sub['sub_code']) . "</td>";
-                                                    echo "<td>" . htmlspecialchars($sub['sub_name']) . "</td>";
-                                                    echo "<td class='text-center'>" . htmlspecialchars($sub['units']) . "</td>";
-                                                    echo "<td class='text-center'>" . ($sub['withLab'] ? "Yes" : "No") . "</td>";
-                                                    echo "<td class='text-center'>
-                                                        <button class='btn btn-danger btn-sm remove-subject' 
-                                                                data-student='{$std_id}' 
-                                                                data-subject='{$sub['sub_id']}'>
-                                                            <i class='fas fa-trash'></i>
-                                                        </button>
-                                                      </td>";
-                                                    echo "</tr>";
-                                                }
-                                            }
-
-                                            echo "</tbody></table>";
+                                    foreach ($curriculum_data as $sub) {
+                                        if ($sub['grade'] !== null && $sub['grade'] !== '') {
+                                            $hasGrades = true;
+                                            $weightedSum += floatval($sub['grade']) * floatval($sub['units']);
+                                            $totalUnits += floatval($sub['units']);
                                         }
-                                    } else {
-                                        echo "<p class='text-muted'>No enrolled subjects found.</p>";
                                     }
-                                } else {
-                                    echo "<p class='text-muted'>No enrolled subjects found.</p>";
-                                }
-                                ?>
+
+                                    $gwa = ($hasGrades && $totalUnits > 0) ? number_format($weightedSum / $totalUnits, 2) : null;
+                                    ?>
+
+                                    <table class="table table-striped table-hover align-middle table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Subject Code</th>
+                                                <th>Subject Name</th>
+                                                <th class="text-center">Units</th>
+                                                <th class="text-center">Grade</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($curriculum_data as $sub): ?>
+                                                <tr>
+                                                    <td><?= htmlspecialchars($sub['sub_code']) ?></td>
+                                                    <td><?= htmlspecialchars($sub['sub_name']) ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($sub['units']) ?></td>
+                                                    <td class="text-center"><?= htmlspecialchars($sub['grade'] ?: '-') ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+
+                                            <?php if ($gwa !== null): ?>
+                                                <tr class="table-primary fw-bold">
+                                                    <td colspan="3" class="text-end">GWA</td>
+                                                    <td class="text-center"><?= $gwa ?></td>
+                                                </tr>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                <?php else: ?>
+                                    <p class="text-muted">No enrolled subjects found.</p>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

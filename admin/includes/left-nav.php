@@ -72,10 +72,10 @@
         </a>
         <div id="collapseSettings" class="collapse" aria-labelledby="headingSettings" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#" style="font-size: 15px;">Departments</a>
+                <!-- <a class="collapse-item" href="#" style="font-size: 15px;">Departments</a> -->
                 <a class="collapse-item" href="courses.php" style="font-size: 15px;">Courses</a>
                 <a class="collapse-item" href="subjects.php" style="font-size: 15px;">Subjects</a>
-                <a class="collapse-item" href="section.php" style="font-size: 15px;">Section</a>
+                <!-- <a class="collapse-item" href="section.php" style="font-size: 15px;">Section</a> -->
             </div>
         </div>
     </li>

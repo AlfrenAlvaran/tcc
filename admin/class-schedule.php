@@ -194,7 +194,7 @@
                                        
                                         <td>
                                         <a href="classList.php?sub_id=${item.sub_id}&sem=${sem}&programID=${programID}&subID=${item.sub_id}&count=${item.student_count}" class="btn btn-primary btn-sm">View Classes</a>
-                                        <button class="btn btn-primary btn-sm">Download</button>
+                                       
                                         </td>
                                     </tr>
                             `);

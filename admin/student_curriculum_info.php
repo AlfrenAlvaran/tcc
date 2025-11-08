@@ -13,6 +13,7 @@ $curriculumId = (int) $student_info['cur_id'];
 $notTakenSubjects = $notTakenCurriculum->notTakenSubjects($studentID, $curriculumId);
 // $taken = $notTakenCurriculum->getCurriculumByStudent($studentID);
 $taken = $notTakenCurriculum->studentCurriculum($studentID);
+
 ?>
 
 <!DOCTYPE html>
@@ -190,7 +191,7 @@ $taken = $notTakenCurriculum->studentCurriculum($studentID);
                                                         <td><?= htmlspecialchars($sub['sub_name']) ?></td>
                                                         <td class="text-center"><?= htmlspecialchars($sub['units']) ?></td>
                                                         <td class="text-center"><?= $sub['withLab'] ? 'Yes' : 'No' ?></td>
-                                                        <td class="text-center <?= $sub['status'] === '✓' ? 'text-success' : 'text-danger' ?>">
+                                                        <td class="text-center <?= $sub['status'] === '✓' ? 'text-secondary' : '.text-secondary' ?>">
                                                             <?= $sub['status'] ?>
                                                         </td>
                                                     </tr>

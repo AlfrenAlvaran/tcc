@@ -7,7 +7,7 @@
     include("includes/header.php");
     include("../config/database.php");
 
-$sql = "
+    $sql = "
 SELECT 
     e.id,
     s.Student_id,
@@ -28,8 +28,8 @@ ORDER BY s.Student_LName;
 
 
     $results = $database->view($sql);
-// echo '<pre>';print_r($results);
-// echo '</pre>';
+    // echo '<pre>';print_r($results);
+    // echo '</pre>';
     ?>
 </head>
 
@@ -55,21 +55,57 @@ ORDER BY s.Student_LName;
                                             <th>Student ID</th>
                                             <th>Name</th>
                                             <th>Program</th>
-                                            <th>Year Level</th>
-                                            <th>Semester</th>
-                                            <th>School Year</th>
+                                           <th>options</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php foreach ($results as $row) { ?>
+
+                                            <?php
+                                               switch($row['sem']) {
+                                                   case 1:
+                                                       $row['sem'] = '1st Semester';
+                                                       break;
+                                                   case 2:
+                                                       $row['sem'] = '2nd Semester';
+                                                       break;
+                                                   default:
+                                                       $row['sem'] = 'Unknown Semester';
+                                               }
+
+                                               switch($row['yr_level']) {
+                                                   case 1:
+                                                       $row['yr_level'] = '1st Year';
+                                                       break;
+                                                   case 2:
+                                                       $row['yr_level'] = '2nd Year';
+                                                       break;
+                                                   case 3:
+                                                       $row['yr_level'] = '3rd Year';
+                                                       break;
+                                                   case 4:
+                                                       $row['yr_level'] = '4th Year';
+                                                       break;
+                                                   default:
+                                                       $row['yr_level'] = 'Unknown Year Level';
+                                               }
+
+                                               $group = $row['sy'].' '.$row['yr_level'] . " - " . $row['sem'];
+
+
+                                            ?>
+
+
                                             <tr>
                                                 <td><?= htmlspecialchars($row['SY']) ?>-<?= htmlspecialchars($row['Student_id']) ?></td>
                                                 <td><?= htmlspecialchars($row["Student_LName"]) ?>, <?= htmlspecialchars($row["Student_FName"]) ?> <?= htmlspecialchars($row["Student_MName"]) ?></td>
                                                 <td><?= htmlspecialchars($row['p_code']) ?></td>
-                                                <td><?= htmlspecialchars($row['yr_level']) ?></td>
-                                                <td><?= htmlspecialchars($row['sem']) ?></td>
-                                                <td><?= htmlspecialchars($row['sy']) ?></td>
+                                                <td>
+                                                    <Select>
+                                                        <option value="<?php echo $group; ?>"><?php echo $group; ?></option>
+                                                    </Select>
+                                                </td>
                                                 <td>
                                                     <a class="btn btn-info fas fa-edit fa-sm text-white" href="view-curriculum.php?id=<?= urlencode($row['Student_id']) ?>">View</a>
                                                 </td>

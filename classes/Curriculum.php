@@ -507,6 +507,20 @@ GROUP BY s.user_id;
 
         return $enrollments;
     }
+    public function getSubjectStudent($id)
+    {
+        $stmt = $this->conn->prepare("
+        SELECT s.sub_code, s.sub_name, s.units, ec.grade
+        FROM enrolled_curriculum ec
+        INNER JOIN subjects s ON ec.subject_id = s.sub_id
+        WHERE ec.student_id = ?
+    ");
+        $stmt->execute([$id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // associative array
+    }
+
+
+
     public function getSubjectsEnrolled($id)
     {
         $stmt = $this->conn->prepare("SELECT * FROM subjects WHERE sub_id = ?");
@@ -739,12 +753,10 @@ GROUP BY s.user_id;
         return $stmt->fetch();
     }
 
-    public function countEnrolledSubjects($id) {
-        $stmt=$this->conn->prepare("SELECT subject_id, COUNT(*) AS total_enrolled FROM enrolled_curriculum WHERE subject_id = ?");
+    public function countEnrolledSubjects($id)
+    {
+        $stmt = $this->conn->prepare("SELECT subject_id, COUNT(*) AS total_enrolled FROM enrolled_curriculum WHERE subject_id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
-
 }
-
-

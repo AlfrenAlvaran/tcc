@@ -15,7 +15,7 @@
     $selectedProgram = $_GET['programID'] ?? '';
 
 
-    
+
     ?>
     <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css" rel="stylesheet">
 </head>
@@ -52,12 +52,26 @@
                                     <label class="form-label">Course</label>
                                     <select name="course" id="course" class="form-control">
                                         <option value="">-- Select Course --</option>
-                                        <?php foreach ($curriculum as $item): ?>
+                                        <?php foreach ($unique as $item): ?>
                                             <?php
-                                            $isSelected = (!empty($selectedProgram) && $selectedProgram == $item['cur_program_id']) ? 'selected' : '';
+                                            switch ($item['sem']) {
+                                                case 1:
+                                                    $semText = '1st Semester';
+                                                    break;
+                                                case 2:
+                                                    $semText = '2nd Semester';
+                                                    break;
+                                                case 3:
+                                                    $semText = '3rd Semester';
+                                                    break;
+                                                default:
+                                                    $semText = 'Unknown Semester';
+                                            }
+
+                                            $isSelected = (!empty($selectedSem) && $selectedSem == $item['sem']) ? 'selected' : '';
                                             ?>
-                                            <option value="<?php echo $item['cur_program_id']; ?>" <?php echo $isSelected; ?>>
-                                                <?php echo $item['p_code']; ?>
+                                            <option value="<?php echo $item['sem']; ?>" <?php echo $isSelected; ?>>
+                                                <?php echo  $item['sy'] . $semText; ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -154,7 +168,7 @@
 
             function fetchSchedule(sem, programID) {
                 $.ajax({
-                    url: 'ajax/fetch-schedule.php', 
+                    url: 'ajax/fetch-schedule.php',
                     type: 'GET',
                     data: {
                         sem: sem,
@@ -181,7 +195,7 @@
                                        
                                         <td>
                                         <a href="encode_grade.php?sub_id=${item.sub_id}&sem=${sem}&programID=${programID}&subID=${item.sub_id}&count=${item.student_count}" class="btn btn-primary btn-sm">View Classes</a>
-                                        <button class="btn btn-primary btn-sm">Download</button>
+                                      
                                         </td>
                                     </tr>
                             `);

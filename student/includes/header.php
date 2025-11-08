@@ -63,7 +63,7 @@ $class = $encode->getStudentAssignedSubjects($_SESSION['id']);
                         <a class="nav-link" href="schedules.php">Schedules</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Grades</a>
+                        <a class="nav-link" href="grade.php">Grades</a>
                     </li>
                 </ul>
             </nav>
