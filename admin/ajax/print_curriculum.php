@@ -109,7 +109,7 @@ $totalUnits = $subjects ? array_sum(array_column($subjects, 'units')) : 0;
         <img src="../../img/tcc_logo.jpg" alt="School Logo"><br>
         <h2>Tomas Claudio Colleges</h2>
         <div>Morong Rizal</div>
-       
+
     </div>
 
     <div class="student-info">
@@ -156,6 +156,16 @@ $totalUnits = $subjects ? array_sum(array_column($subjects, 'units')) : 0;
             <?php endif; ?>
         </tbody>
     </table>
+
+
+    <div style="margin-top: 60px; display: flex; justify-content: end; width: 100%;">
+        <div style="text-align: center;">
+            <p>__________________________</p>
+            <p>Registrar</p>
+        </div>
+
+        
+    </div>
 </body>
 
 </html>

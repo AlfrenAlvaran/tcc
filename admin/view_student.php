@@ -117,7 +117,7 @@
                                 <table class="table table-sm table-striped" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Subject Code</th>
+                                            <th class="text-start">Subject Code</th>
                                             <th>Subject Name</th>
                                             <th class="text-center">Units</th>
                                             <td>Action</td>
@@ -131,8 +131,9 @@
                     </div>
 
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <h6 class="m-0 font-weight-bold text-primary">Advised Subject</h6>
+                            <button class="btn btn-primary btn-sm" style="width: 200px;" onclick="downloadPDF()">Download</button>
                         </div>
 
                         <div class="card-body">
@@ -140,12 +141,12 @@
                                 <div class="d-flex justify-content-center mt-4 flex-column align-items-center">
 
 
-                                    <table class="table mt-5 text-center table-bordered advised-table">
+                                    <table class="table text-center table-bordered advised-table">
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Subject Code</th>
-                                                <th>Subject Name</th>
+                                                <th class="text-start" style="text-align: left !important;">Subject Code</th>
+                                                <th class="text-start" style="text-align: left !important;">Subject Description</th>
                                                 <th>Units</th>
                                                 <th>With Lab</th>
                                                 <td>Action</td>
@@ -275,10 +276,7 @@
                         alert("Response: " + response.message);
                         subjectCart = [];
                         table.clear().draw();
-                        window.open(
-                            "ajax/print_curriculum.php?student_id=<?= $_GET['student_id']; ?>&prog_id=<?= (int)$_GET['progID']; ?>&cur_year=<?= (int)$_GET['year']; ?>&sem=<?= (int)$_GET['sem']; ?>",
-                            "_blank"
-                        );
+                        location.load();
                     },
                     error: () => {
                         alert("An error occurred while adding the curriculum.");
@@ -312,8 +310,8 @@
                     tbody.insertAdjacentHTML("beforeend", `
                 <tr data-id="${subject.sub_id}">
                     <td>${index + 1}</td>
-                    <td>${subject.sub_code}</td>
-                    <td>${subject.sub_name}</td>
+                    <td class="text-start" style="text-align: left !important;">${subject.sub_code}</td>
+                    <td class="text-start" style="text-align: left !important;">${subject.sub_name}</td>
                     <td>${subject.units}</td>
                     <td>${subject.withLab == 1 ? "Yes" : "No"}</td>
                     <td>
@@ -344,7 +342,7 @@
                             row.remove();
                             alert("Subject removed successfully!");
 
-                             fetchSubjects(studentIDString, programID, year, sem);
+                            fetchSubjects(studentIDString, programID, year, sem);
                         } else {
                             alert("Failed to remove subject: " + result.message);
                         }
@@ -355,7 +353,11 @@
     </script>
 
 
-
+    <script>
+        function downloadPDF() {
+            window.location.href = `api/download_curriculum.php?student_id=<?= $_GET['student_id']; ?>&prog_id=<?= (int)$_GET['progID']; ?>&cur_year=<?= (int)$_GET['year']; ?>&sem=<?= (int)$_GET['sem']; ?>`;
+        }
+    </script>
 </body>
 
 </html>

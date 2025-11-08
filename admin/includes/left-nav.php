@@ -35,6 +35,12 @@
             <span style="font-size: 16px;">Advising</span>
         </a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link" href="StudentCode.php">
+            <i class="fas fa-fw fa-book"></i>
+            <span style="font-size: 16px;">Encode</span>
+        </a>
+    </li>
 
     <!-- Divider -->
     <hr class="sidebar-divider">
@@ -52,6 +58,7 @@
                 <a class="collapse-item" href="enrolled_students.php" style="font-size: 15px;">Enroll Students</a>
                 <a class="collapse-item" href="student_information.php" style="font-size: 15px;">Students Information</a>
                 <a class="collapse-item" href="student_curriculum.php" style="font-size: 15px;">Students Curriculum</a>
+                <a class="collapse-item" href="class-schedule.php" style="font-size: 15px;">Schedule</a>
             </div>
         </div>
     </li>

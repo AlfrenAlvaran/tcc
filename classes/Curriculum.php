@@ -577,4 +577,174 @@ GROUP BY s.user_id;
         $stmt = $this->conn->prepare("DELETE FROM enrolled_curriculum WHERE subject_id = ?");
         return $stmt->execute([$id]);
     }
+
+    public function getSubjectsBySemAndProgramWithStudentCount($sem = null, $programID = null)
+    {
+        $sql = " SELECT 
+            ec.sy, 
+            ec.semester,
+            s.sub_id,
+            s.sub_code,
+            s.sub_name,
+            s.units,
+            COUNT(DISTINCT ec.student_id) AS student_count
+        FROM enrolled_curriculum ec
+        INNER JOIN subjects s ON ec.subject_id = s.sub_id
+        WHERE 1=1
+        ";
+
+        $params = [];
+
+        if (!empty($sem)) {
+            $sql .= " AND ec.semester = ?";
+            $params[] = $sem;
+        }
+
+        if (!empty($programID)) {
+            $sql .= " AND ec.program_id = ?";
+            $params[] = $programID;
+        }
+
+        $sql .= " GROUP BY ec.sy, ec.semester, s.sub_id, s.sub_code, s.sub_name, s.units
+              ORDER BY ec.sy DESC, ec.semester DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+
+    public function SemesterAndProgram()
+    {
+        $stmt = $this->conn->prepare("
+        SELECT DISTINCT 
+            e.sy, 
+            e.sem, 
+            c.cur_program_id, 
+            p.p_code
+        FROM enrollments e
+        JOIN curriculum c ON e.curriculum_id = c.cur_id
+        JOIN programs p ON c.cur_program_id = p.program_id
+        ORDER BY e.sy DESC, e.sem DESC
+    ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getUniqueSemesters()
+    {
+        $stmt = $this->conn->prepare("
+        SELECT DISTINCT sy, sem
+        FROM enrollments
+        ORDER BY sy DESC, sem DESC
+    ");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    public function getSubjectsByStudent($studentID, $sem = null, $programID = null)
+    {
+        $sql = "SELECT 
+            ec.sy,
+            ec.semester,
+            s.sub_id,
+            s.sub_code,
+            s.sub_name,
+            s.units,
+            st.Student_id,
+            st.Student_LName,
+            st.Student_FName,
+            st.Student_MName,
+            st.SY
+        FROM enrolled_curriculum ec
+        INNER JOIN subjects s ON ec.subject_id = s.sub_id
+        INNER JOIN students st ON ec.student_id = st.Student_id AND st.prog_id = ec.program_id
+        WHERE ec.student_id = ?";
+
+        $params = [$studentID];
+
+        if (!empty($sem)) {
+            $sql .= " AND ec.semester = ?";
+            $params[] = $sem;
+        }
+
+        if (!empty($programID)) {
+            $sql .= " AND ec.program_id = ?";
+            $params[] = $programID;
+        }
+
+        $sql .= " ORDER BY s.sub_code";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getStudentsBySubjectID($subID, $sem = null, $programID = null)
+    {
+        $sql = "SELECT 
+            ec.sy,
+            ec.semester,
+            ec.grade,
+            s.sub_id,
+            s.sub_code,
+            s.sub_name,
+            s.units,
+            st.Student_id,
+            st.Student_LName,
+            st.Student_FName,
+            st.Student_MName,
+            st.SY,
+            st.gender,
+            p.program_id,
+            p.p_code
+        FROM enrolled_curriculum ec
+        INNER JOIN subjects s ON ec.subject_id = s.sub_id
+        INNER JOIN students st ON ec.student_id = st.Student_id
+        INNER JOIN programs p ON ec.program_id = p.program_id
+        WHERE s.sub_id = ?";
+
+        $params = [$subID];
+
+        if (!empty($sem)) {
+            $sql .= " AND ec.semester = ?";
+            $params[] = $sem;
+        }
+
+        if (!empty($programID)) {
+            $sql .= " AND ec.program_id = ?";
+            $params[] = $programID;
+        }
+
+        $sql .= " ORDER BY st.Student_LName, st.Student_FName";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    public function getOneSubject($id)
+    {
+        $stmt = $this->conn->prepare("SELECT sub_code, sub_name FROM subjects WHERE sub_id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
+    public function getCourse($id)
+    {
+        $stmt = $this->conn->prepare("SELECT p_code, p_des FROM programs WHERE program_id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
+    public function countEnrolledSubjects($id) {
+        $stmt=$this->conn->prepare("SELECT subject_id, COUNT(*) AS total_enrolled FROM enrolled_curriculum WHERE subject_id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
 }
+
+

@@ -102,7 +102,7 @@
 											</div>
 											<div class="col-lg-4">
 												<label for="mname" class="form-label">Middle Name</label>
-												<input type="text" name="mname" class="form-control" required autocomplete="off" placeholder="Middle Name">
+												<input type="text" name="mname" class="form-control"  autocomplete="off" placeholder="Middle Name">
 											</div>
 											<div class="col-lg-4">
 												<label for="lname" class="form-label">Last Name</label>
