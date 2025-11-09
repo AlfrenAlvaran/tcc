@@ -7,9 +7,7 @@ $std_id = $_GET['id'];
 $curriculum = new Curriculum();
 $curriculum_data = $curriculum->getSubjectStudent($_GET['id']);
 
-// echo '<pre>';
-// print_r($curriculum_data);
-// echo '</pre>';
+
 $student_info = $curriculum->getStudentBasicInfo(id: $std_id);
 
 // $data = $curriculum->getSubjectStudent($_GET['id']);
@@ -100,22 +98,26 @@ $student_info = $curriculum->getStudentBasicInfo(id: $std_id);
                         <div class="card-body">
                             <div class="table-responsive">
                                 <?php if (!empty($curriculum_data)): ?>
-                                    <?php
-                                   
-                                    $totalUnits = 0;
-                                    $weightedSum = 0;
-                                    $hasGrades = false;
+<?php
+$allGradesExist = true;
+$totalUnits = 0;
+$weightedSum = 0;
 
-                                    foreach ($curriculum_data as $sub) {
-                                        if ($sub['grade'] !== null && $sub['grade'] !== '') {
-                                            $hasGrades = true;
-                                            $weightedSum += floatval($sub['grade']) * floatval($sub['units']);
-                                            $totalUnits += floatval($sub['units']);
-                                        }
-                                    }
+foreach ($curriculum_data as $sub) {
+    if (!isset($sub['grade']) || $sub['grade'] === '') {
 
-                                    $gwa = ($hasGrades && $totalUnits > 0) ? number_format($weightedSum / $totalUnits, 2) : null;
-                                    ?>
+        $allGradesExist = false;
+        break;
+    }
+    $weightedSum += floatval($sub['grade']) * floatval($sub['units']);
+    $totalUnits += floatval($sub['units']);
+}
+
+
+$gwa = ($allGradesExist && $totalUnits > 0) ? number_format($weightedSum / $totalUnits, 2) : null;
+?>
+
+
 
                                     <table class="table table-striped table-hover align-middle table-bordered">
                                         <thead class="table-light">

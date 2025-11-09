@@ -9,6 +9,7 @@
     require_once __DIR__ . "/../classes/Students.php";
     $students = new Curriculum();
     $curriculum = $students->SemesterAndProgram();
+    // var_dump($curriculum);
     $unique = $students->getUniqueSemesters();
 
     $selectedSem = $_GET['sem'] ?? '';
@@ -38,22 +39,6 @@
                                         <option value="">-- Select School Year & Semester --</option>
                                         <?php foreach ($unique as $item): ?>
                                             <?php
-
-                                            $isSelected = (!empty($selectedSem) && $selectedSem == $item['sem']) ? 'selected' : '';
-                                            ?>
-                                            <option value="<?php echo $item['sem']; ?>" <?php echo $isSelected; ?>>
-                                                <?php echo 'SY: ' . $item['sy'] . ' - Sem: ' . $item['sem']; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Course</label>
-                                    <select name="course" id="course" class="form-control">
-                                        <option value="">-- Select Course --</option>
-                                        <?php foreach ($unique as $item): ?>
-                                            <?php
                                             switch ($item['sem']) {
                                                 case 1:
                                                     $semText = '1st Semester';
@@ -72,6 +57,18 @@
                                             ?>
                                             <option value="<?php echo $item['sem']; ?>" <?php echo $isSelected; ?>>
                                                 <?php echo  $item['sy'] . $semText; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Course</label>
+                                    <select name="course" id="course" class="form-control">
+                                        <option value="">-- Select Course --</option>
+                                        <?php foreach ($curriculum as $item): ?>
+                                            <option value="<?php echo $item['cur_program_id']; ?>" <?php echo ($selectedProgram == $item['cur_program_id']) ? 'selected' : ''; ?>>
+                                                <?php echo $item['p_code']; ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
