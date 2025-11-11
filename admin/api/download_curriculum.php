@@ -41,6 +41,7 @@ $totalUnits = $subjects ? array_sum(array_column($subjects, 'units')) : 0;
 
 ob_start();
 include __DIR__ . '/../ajax/print_curriculum.php';  
+$html = ob_get_clean();
 
 
 $options = new Options();

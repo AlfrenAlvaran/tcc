@@ -104,9 +104,9 @@ $totalUnits = $subjects ? array_sum(array_column($subjects, 'units')) : 0;
     </style>
 </head>
 
-<body onload="window.print()">
+<body >
     <div class="school-header">
-        <img src="../../img/tcc_logo.jpg" alt="School Logo"><br>
+       <img src="../../../img/tcc_logo.jpg" alt="School Logo"><br>
         <h2>Tomas Claudio Colleges</h2>
         <div>Morong Rizal</div>
 
