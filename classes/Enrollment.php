@@ -69,8 +69,8 @@ class Enrollment
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     public function getStudentsWithEnrollments()
-{
-    $sql = "SELECT 
+    {
+        $sql = "SELECT 
                 s.user_id,
                 s.Student_id,
                 s.SY,
@@ -86,10 +86,9 @@ class Enrollment
             INNER JOIN programs p ON s.prog_id = p.program_id
             GROUP BY s.Student_id
             ORDER BY s.Student_LName;";
-    
-    $stmt = $this->conn->prepare($sql);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
