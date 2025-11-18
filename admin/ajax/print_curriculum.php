@@ -19,7 +19,7 @@ $stmt = $conn->prepare("
         st.SY,
         p.p_des,
         ec.semester,
-        ec.semester,
+ec.sy,
         ec.sy,
         s.sub_code,
         s.sub_name,
@@ -33,7 +33,7 @@ $stmt = $conn->prepare("
     JOIN subjects s ON ec.subject_id = s.sub_id
     WHERE st.Student_id = ?
     AND ec.semester = ?
-    ORDER BY ec.semester DESC, ec.semester DESC
+   ORDER BY ec.sy DESC, ec.semester DESC
 ");
 $stmt->execute([$student_id, $sem]);
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -106,7 +106,12 @@ $totalUnits = $subjects ? array_sum(array_column($subjects, 'units')) : 0;
 
 <body >
     <div class="school-header">
-       <img src="../../../img/tcc_logo.jpg" alt="School Logo"><br>
+<?php
+$logoUrl ="http://" . $_SERVER['HTTP_HOST'] . "/tcc/img/tcc_logo.jpg";
+?>
+<img src="<?= $logoUrl ?>" alt="School Logo">
+
+
         <h2>Tomas Claudio Colleges</h2>
         <div>Morong Rizal</div>
 
