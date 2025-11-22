@@ -77,6 +77,9 @@
                                     <thead>
                                         <tr>
                                             <th>Subject</th>
+                                            <th class="text-center align-middle">
+                                                Default
+                                            </th>
                                             <th style="width: 20px;">Action</th>
                                         </tr>
                                     </thead>
@@ -87,15 +90,19 @@
                                                     id="subjectDropdown">
                                                     <option value="">--- Select Subject ---</option>
                                                     <?php foreach ($students->getNotTakenSubjectsByStudent((string)$_GET['student_id']) as $subject): ?>
-                                                        <option value="<?= $subject['sub_id'] ?>">
-                                                            <?= $subject['sub_code'] . ' - ' . $subject['sub_name'] . ' - units ' . $subject['units'] ?>
-                                                        </option>
+                                                    <option value="<?= $subject['sub_id'] ?>">
+                                                        <?= $subject['sub_code'] . ' - ' . $subject['sub_name'] . ' - units ' . $subject['units'] ?>
+                                                    </option>
                                                     <?php endforeach; ?>
                                                 </select>
                                             </td>
+                                            <td class="text-center align-middle">
+                                                <input type="checkbox" id="defaultCheckbox">
+                                            </td>
+
                                             <td>
-                                                <button type="button" class="btn btn-primary btn-sm" style="width: 200px;"
-                                                    id="addSubject">Add</button>
+                                                <button type="button" class="btn btn-primary btn-sm"
+                                                    style="width: 200px;" id="addSubject">Add</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -109,7 +116,8 @@
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary"><?= $_GET['student'] ?></h6>
                             <div class="float-right">
-                                <button class="btn btn-primary btn-sm" id="addCurriculum" style="width: 200px;">Save</button>
+                                <button class="btn btn-primary btn-sm" id="addCurriculum"
+                                    style="width: 200px;">Save</button>
                             </div>
                         </div>
                         <div class="card-body">
@@ -133,7 +141,8 @@
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <h6 class="m-0 font-weight-bold text-primary">Advised Subject</h6>
-                            <button class="btn btn-primary btn-sm" style="width: 200px;" onclick="downloadPDF()">Download</button>
+                            <button class="btn btn-primary btn-sm" style="width: 200px;"
+                                onclick="downloadPDF()">Download</button>
                         </div>
 
                         <div class="card-body">
@@ -145,8 +154,10 @@
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th class="text-start" style="text-align: left !important;">Subject Code</th>
-                                                <th class="text-start" style="text-align: left !important;">Subject Description</th>
+                                                <th class="text-start" style="text-align: left !important;">Subject Code
+                                                </th>
+                                                <th class="text-start" style="text-align: left !important;">Subject
+                                                    Description</th>
                                                 <th>Units</th>
                                                 <th>With Lab</th>
                                                 <td>Action</td>
@@ -202,112 +213,114 @@
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-            const table = $('#dataTable').DataTable();
-            let subjectCart = [];
+    $(document).ready(function() {
+        const table = $('#dataTable').DataTable();
+        let subjectCart = [];
 
-            $("#addSubject").on("click", function(e) {
-                e.preventDefault();
-                let dropdown = $("#subjectDropdown");
-                let selectedValue = dropdown.val();
-                let selectedText = dropdown.find("option:selected").text();
-                let unitsMatch = selectedText.match(/units (\d+)/);
-                let units = unitsMatch ? parseInt(unitsMatch[1]) : 0;
+        $("#addSubject").on("click", function(e) {
+            e.preventDefault();
+            let dropdown = $("#subjectDropdown");
+            let selectedValue = dropdown.val();
+            let selectedText = dropdown.find("option:selected").text();
+            let unitsMatch = selectedText.match(/units (\d+)/);
+            let units = unitsMatch ? parseInt(unitsMatch[1]) : 0;
 
-                if (!selectedValue) {
-                    alert("Please select a subject first.");
-                    return;
-                }
-
-                if (subjectCart.some(sub => sub.sub_id == selectedValue)) {
-                    alert("This subject is already added to the cart!");
-                    return;
-                }
-
-                subjectCart.push({
-                    sub_id: selectedValue,
-                    sub_code: selectedText.split(' - ')[0],
-                    sub_name: selectedText.split(' - ')[1],
-                    units: units
-                });
-
-                renderTable();
-            });
-
-            $('#dataTable tbody').on('click', '.remove-subject', function() {
-                let subId = $(this).data('id');
-                subjectCart = subjectCart.filter(sub => sub.sub_id != subId);
-                renderTable();
-            });
-
-            function renderTable() {
-                table.clear().draw();
-
-                subjectCart.forEach(subject => {
-                    table.row.add([
-                        subject.sub_code,
-                        subject.sub_name,
-                        `<div class="text-center">${subject.units}</div>`,
-                        `<button class="btn btn-danger btn-sm remove-subject" data-id="${subject.sub_id}">
-                    <i class="fas fa-trash"></i>
-                 </button>`
-                    ]).draw(false);
-                });
+            if (!selectedValue) {
+                alert("Please select a subject first.");
+                return;
             }
 
-            $("#addCurriculum").on("click", function() {
-                if (subjectCart.length === 0) {
-                    alert("No subjects to add. Please add subjects first.");
-                    return;
-                }
+            if (subjectCart.some(sub => sub.sub_id == selectedValue)) {
+                alert("This subject is already added to the cart!");
+                return;
+            }
 
+            subjectCart.push({
+                sub_id: selectedValue,
+                sub_code: selectedText.split(' - ')[0],
+                sub_name: selectedText.split(' - ')[1],
+                units: units
+            });
 
-                $.ajax({
-                    url: "ajax/enroll_curriculum.php",
-                    type: "POST",
-                    data: {
-                        student_id: <?= (string)$_GET['student_id']; ?>,
-                        prog_id: <?= (int)$_GET['progID']; ?>,
-                        cur_year: <?= (int)$_GET['year']; ?>,
-                        sem: <?= (int)$_GET['sem']; ?>,
-                        subjects: JSON.stringify(subjectCart)
-                    },
-                    success: function(response) {
-                        alert("Response: " + response.message);
-                        subjectCart = [];
-                        table.clear().draw();
-                        location.load();
-                    },
-                    error: () => {
-                        alert("An error occurred while adding the curriculum.");
-                    }
-                })
-            })
+            renderTable();
         });
+
+        $('#dataTable tbody').on('click', '.remove-subject', function() {
+            let subId = $(this).data('id');
+            subjectCart = subjectCart.filter(sub => sub.sub_id != subId);
+            renderTable();
+        });
+
+        function renderTable() {
+            table.clear().draw();
+
+            subjectCart.forEach(subject => {
+                table.row.add([
+                    subject.sub_code,
+                    subject.sub_name,
+                    `<div class="text-center">${subject.units}</div>`,
+                    `<button class="btn btn-danger btn-sm remove-subject" data-id="${subject.sub_id}">
+                    <i class="fas fa-trash"></i>
+                 </button>`
+                ]).draw(false);
+            });
+        }
+
+        $("#addCurriculum").on("click", function() {
+            if (subjectCart.length === 0) {
+                alert("No subjects to add. Please add subjects first.");
+                return;
+            }
+
+
+            $.ajax({
+                url: "ajax/enroll_curriculum.php",
+                type: "POST",
+                data: {
+                    student_id: <?= (string)$_GET['student_id']; ?>,
+                    prog_id: <?= (int)$_GET['progID']; ?>,
+                    cur_year: <?= (int)$_GET['year']; ?>,
+                    sem: <?= (int)$_GET['sem']; ?>,
+                    subjects: JSON.stringify(subjectCart)
+                },
+                success: function(response) {
+                    alert("Response: " + response.message);
+                    subjectCart = [];
+                    table.clear().draw();
+                    location.load();
+                },
+                error: () => {
+                    alert("An error occurred while adding the curriculum.");
+                }
+            })
+        })
+    });
     </script>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const tbody = document.querySelector(".advised-table-body");
-            const studentIDString = <?= json_encode($_GET['student_id']) ?>;
-            const programID = <?= json_encode($_GET['progID']) ?>;
-            const year = <?= json_encode($_GET['year']) ?>;
-            const sem = <?= json_encode($_GET['sem']) ?>;
+    document.addEventListener("DOMContentLoaded", () => {
+        const tbody = document.querySelector(".advised-table-body");
+        const studentIDString = <?= json_encode($_GET['student_id']) ?>;
+        const programID = <?= json_encode($_GET['progID']) ?>;
+        const year = <?= json_encode($_GET['year']) ?>;
+        const sem = <?= json_encode($_GET['sem']) ?>;
 
-            fetchSubjects(studentIDString, programID, year, sem);
+        fetchSubjects(studentIDString, programID, year, sem);
 
-            async function fetchSubjects(studentIDString, programID, year, sem) {
-                const res = await fetch(`api/get-curriculum.php?student_id=${studentIDString}&progID=${programID}&year=${year}&sem=${sem}`);
-                const data = await res.json();
+        async function fetchSubjects(studentIDString, programID, year, sem) {
+            const res = await fetch(
+                `api/get-curriculum.php?student_id=${studentIDString}&progID=${programID}&year=${year}&sem=${sem}`
+                );
+            const data = await res.json();
 
-                tbody.innerHTML = '';
+            tbody.innerHTML = '';
 
-                if (!data.length || !data[0].subjects.length) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="text-muted">No subjects found</td></tr>`;
-                    return;
-                }
+            if (!data.length || !data[0].subjects.length) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-muted">No subjects found</td></tr>`;
+                return;
+            }
 
-                data[0].subjects.forEach((subject, index) => {
-                    tbody.insertAdjacentHTML("beforeend", `
+            data[0].subjects.forEach((subject, index) => {
+                tbody.insertAdjacentHTML("beforeend", `
                 <tr data-id="${subject.sub_id}">
                     <td>${index + 1}</td>
                     <td class="text-start" style="text-align: left !important;">${subject.sub_code}</td>
@@ -321,42 +334,44 @@
                     </td>
                 </tr>
             `);
-                });
+            });
 
-                // 🧠 Attach listeners *after* inserting the rows
-                tbody.querySelectorAll(".remove-subject").forEach(button => {
-                    button.addEventListener("click", async (e) => {
-                        const row = e.target.closest("tr");
-                        const subjectID = row.dataset.id;
+            // 🧠 Attach listeners *after* inserting the rows
+            tbody.querySelectorAll(".remove-subject").forEach(button => {
+                button.addEventListener("click", async (e) => {
+                    const row = e.target.closest("tr");
+                    const subjectID = row.dataset.id;
 
-                        if (!confirm("Are you sure you want to remove this subject?")) return;
+                    if (!confirm("Are you sure you want to remove this subject?"))
+                        return;
 
-                        const res = await fetch(`api/remove_subject.php?id=${subjectID}`, {
-                            method: "DELETE"
-                        });
-
-                        const result = await res.json();
-                        console.log(result)
-
-                        if (result.success) {
-                            row.remove();
-                            alert("Subject removed successfully!");
-
-                            fetchSubjects(studentIDString, programID, year, sem);
-                        } else {
-                            alert("Failed to remove subject: " + result.message);
-                        }
+                    const res = await fetch(`api/remove_subject.php?id=${subjectID}`, {
+                        method: "DELETE"
                     });
+
+                    const result = await res.json();
+                    console.log(result)
+
+                    if (result.success) {
+                        row.remove();
+                        alert("Subject removed successfully!");
+
+                        fetchSubjects(studentIDString, programID, year, sem);
+                    } else {
+                        alert("Failed to remove subject: " + result.message);
+                    }
                 });
-            }
-        });
+            });
+        }
+    });
     </script>
 
 
     <script>
-        function downloadPDF() {
-            window.location.href = `api/download_curriculum.php?student_id=<?= $_GET['student_id']; ?>&prog_id=<?= (int)$_GET['progID']; ?>&cur_year=<?= (int)$_GET['year']; ?>&sem=<?= (int)$_GET['sem']; ?>`;
-        }
+    function downloadPDF() {
+        window.location.href =
+            `api/download_curriculum.php?student_id=<?= $_GET['student_id']; ?>&prog_id=<?= (int)$_GET['progID']; ?>&cur_year=<?= (int)$_GET['year']; ?>&sem=<?= (int)$_GET['sem']; ?>`;
+    }
     </script>
 </body>
 

@@ -211,8 +211,7 @@ class Teacher extends Database
     {
         $teacher_id = intval($teacher_id);
 
-        $sql = "
-        SELECT 
+        $sql = "SELECT 
             sc.id AS schedule_id,
             subj.sub_code,
             subj.sub_name,

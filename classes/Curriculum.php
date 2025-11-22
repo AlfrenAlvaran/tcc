@@ -760,3 +760,4 @@ GROUP BY s.user_id;
         return $stmt->fetch();
     }
 }
+
